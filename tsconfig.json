@@ -1,4 +1,9 @@
 {
+  "exclude": [
+    "build",
+    "__tests__",
+    "vitest.config.ts"
+  ],
   "compilerOptions": {
     "target": "es2019",
     "lib": [

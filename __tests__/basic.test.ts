@@ -1,10 +1,42 @@
-import { describe, test, } from 'vitest';
+import AutoLoad from "@fastify/autoload";
+import fastify, {FastifyInstance } from "fastify";
+import customHealthCheck from "fastify-custom-healthcheck";
+import {fileURLToPath} from "node:url";
+import {dirname, join} from "path";
+import {describe, test, beforeEach, afterEach, expect } from 'vitest';
+
+
+const fileName = fileURLToPath(import.meta.url)
+const dirName = dirname(fileName)
+
+let server: FastifyInstance
+
+beforeEach(async () => {
+  server = await fastify()
+
+  server.register(customHealthCheck)
+
+  await server.ready()
+})
+afterEach(async () => {
+  // called once after all tests run
+  await server.close()
+})
+
 
 describe('itil - basic tests', () => {
 
   describe('fastify', () => {
 
-    test.todo('graphql is available')
+    test('graphql is available', async async => {
+      server.log.debug('Test')
+
+      const result = await server.inject({
+        path: "/health"
+      })
+      console.log(result)
+
+    })
 
     test.todo('health checks good - basic')
 
