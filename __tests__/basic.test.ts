@@ -4,7 +4,7 @@ import customHealthCheck from "fastify-custom-healthcheck";
 import {fileURLToPath} from "node:url";
 import {dirname, join} from "path";
 import {describe, test, beforeEach, afterEach, expect } from 'vitest';
-
+import buildApp from '../src/app'
 
 const fileName = fileURLToPath(import.meta.url)
 const dirName = dirname(fileName)
@@ -12,9 +12,7 @@ const dirName = dirname(fileName)
 let server: FastifyInstance
 
 beforeEach(async () => {
-  server = await fastify()
-
-  server.register(customHealthCheck)
+  server = await buildApp(fastify())
 
   await server.ready()
 })
