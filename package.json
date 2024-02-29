@@ -1,0 +1,40 @@
+{
+    "name": "node-microservice-itil",
+    "version": "0.0.0-development",
+    "description": "",
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "type": "module",
+    "main": "app.ts",
+    "scripts": {
+        "clean": "rm -rf coverage docs build temp",
+        "build": "tsc -p tsconfig.json",
+        "build:prod": "tsc -p tsconfig.prd.json",
+        "build:watch": "tsc -p tsconfig.json -w",
+        "dev": "fastify start -p 3000 -w -l debug -P build/app.js",
+        "dev:trace": "fastify start -p 3000 -w -l trace -P build/app.js",
+        "dev:expose": "fastify start -a 0.0.0.0 -p 3000 -w -l debug -P build/app.js",
+        "prod": "fastify start -l info -P build/app.js",
+        "lint": "npmPkgJsonLint . && ts-standard | snazzy",
+        "lint:fix": "npmPkgJsonLint . && ts-standard --fix | snazzy",
+        "typedoc": "typedoc",
+        "typedoc:watch": "typedoc -watch",
+        "update": "npx npm-check-updates -u && npm install"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JAMS-Project/node-microservice-itil.git"
+    },
+    "keywords": [
+        ""
+    ],
+    "author": {
+        "name": "Shane Froebel"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/JAMS-Project/node-microservice-itil/issues"
+    },
+    "homepage": "https://github.com/JAMS-Project/node-microservice-itil#readme"
+}
