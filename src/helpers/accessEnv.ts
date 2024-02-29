@@ -1,7 +1,4 @@
-import * as dotenv from 'dotenv'
 const cache: any = {}
-
-dotenv.config({ override: process.env.NODE_ENV !== 'production' })
 
 export const accessEnv = (key: string, defaultValue: string = ''): string => {
   if (!(key in process.env)) {
