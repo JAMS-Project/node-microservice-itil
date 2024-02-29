@@ -1,6 +1,4 @@
-import AutoLoad from "@fastify/autoload";
 import fastify, {FastifyInstance } from "fastify";
-import customHealthCheck from "fastify-custom-healthcheck";
 import {fileURLToPath} from "node:url";
 import {dirname, join} from "path";
 import {describe, test, beforeEach, afterEach, expect } from 'vitest';
