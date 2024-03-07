@@ -1,7 +1,7 @@
 {
   "exclude": [
     "build",
-    "__tests__",
+    "__tests__/**/*.ts",
     "vitest.config.ts"
   ],
   "compilerOptions": {
@@ -10,7 +10,7 @@
       "es2020"
     ],
     "module": "es2020",
-    "rootDir": "src",
+    "rootDir": "src/",
     "outDir": "build",
     "sourceMap": true,
     "moduleResolution": "Node",

@@ -1,17 +1,12 @@
 import fastify, {FastifyInstance } from "fastify";
-import {fileURLToPath} from "node:url";
-import {dirname, join} from "path";
 import {describe, test, beforeEach, afterEach, expect } from 'vitest';
 import buildApp from '../src/app'
-
-const fileName = fileURLToPath(import.meta.url)
-const dirName = dirname(fileName)
+import csCreate from "./__fixtures__/grpahql/mutation/csCreate";
 
 let server: FastifyInstance
 
 beforeEach(async () => {
   server = await buildApp(fastify())
-
   await server.ready()
 })
 afterEach(async () => {
@@ -19,32 +14,38 @@ afterEach(async () => {
   await server.close()
 })
 
-
 describe('itil - basic tests', () => {
 
   describe('fastify', () => {
 
     test('graphql is available', async async => {
-      server.log.debug('Test')
+      const result = await server.inject({
+        path: "/graphql"
+      })
+      expect(result.statusCode).toBe(400)
+    })
 
+    test('health checks good', async() => {
       const result = await server.inject({
         path: "/health"
       })
-      console.log(result)
-
+      expect(result.json<{ healthChecks: { mongodb: string }}>().healthChecks.mongodb).toBe('HEALTHY')
+      expect(result.json<{ healthChecks: { rabbitmq: string }}>().healthChecks.rabbitmq).toBe('HEALTHY')
     })
-
-    test.todo('health checks good - basic')
-
-    test.todo('health checks good - rabbitmq')
-
-    test.todo('health checks good - mongodb')
 
   })
 
   describe('cs', () => {
 
-    test.todo('create')
+    test('create', async() => {
+
+      const result = await server.inject({
+        method: "POST",
+        body: csCreate(),
+        path: "/graphql"
+      })
+
+    })
 
     test.todo('query')
 

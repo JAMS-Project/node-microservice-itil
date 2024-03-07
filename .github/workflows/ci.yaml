@@ -5,11 +5,11 @@ jobs:
   Test:
     runs-on: ubuntu-latest
     services:
-      mongodb:
+      rabbitmq:
         image: rabbitmq:3-alpine
         ports:
           - 5672:5672
-      rabbitmq:
+      mongodb:
         image: mongo:7.0.5-jammy
         ports:
           - 27017:27017

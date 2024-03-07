@@ -1,13 +1,12 @@
-// Mutation
-// Query
-
+import {csCreate} from "./mutation/csCreate.js";
+import {csQuery} from "./query/csQuery.js";
 
 const Mutation = {
-  // import mutations
+  csCreate
 }
 
 const Query = {
-  // import query
+  csQuery
 }
 
 const Types = {}

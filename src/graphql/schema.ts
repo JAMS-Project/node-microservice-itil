@@ -2,11 +2,11 @@ import { gql } from 'mercurius-codegen'
 
 const schema = gql`
     extend type Mutation {
-        // insert resolvers
+      csCreate: Boolean
     }
           
     extend type Query {
-        // insert resolvers
+      csQuery: Boolean
     }
 `
 
