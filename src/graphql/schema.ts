@@ -2,6 +2,13 @@ import { gql } from 'mercurius-codegen'
 
 const schema = gql`
 
+    enum CSPriority {
+      LOW
+      MODERATE
+      HIGH
+      CRITICAL
+    }
+
     enum CSChannel {
       SELFSERVE
       WEB
@@ -10,7 +17,7 @@ const schema = gql`
     }
 
     extend type Mutation {
-      csCreate(number: String, channel: CSChannel, contact: String, priority: String, subject: String, description: String): Boolean
+      csCreate(number: String!, channel: CSChannel!, contact: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean
     }
           
     extend type Query {

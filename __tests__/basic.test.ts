@@ -14,6 +14,9 @@ beforeAll(async () => {
 
   // create defaults
   await server.mongo.db?.collection('misc').deleteMany()
+  await server.mongo.db?.collection('cs').deleteMany()
+  await server.mongo.db?.collection('activityLog').deleteMany()
+
   await server.mongo.db?.collection('misc').insertOne({name: 'numberCsLen', value: 7, system: true})
   await server.mongo.db?.collection('misc').insertOne({name: 'numberIncLen', value: 7, system: true})
   await server.mongo.db?.collection('misc').insertOne({name: 'numberPrbLen', value: 7, system: true})
@@ -68,18 +71,19 @@ describe('itil - basic tests', () => {
       const valueString = zeroPad(currentNumber, valueLen)
 
       const gql = graphqlMutation('csCreate', {
-          'number': { value: `CS${valueString}` },
+          'number': { value: `CS${valueString}`, required: true },
           'channel': {
             value: 'SELFSERVE',
-            type: "CSChannel"
-          },
-          'contact': { value: '00000001'},
-          'account': { value: '00000001' },
-          'priority': { value: '1'},
+            type: "CSChannel", required: true },
+          'contact': { value: '00000001', required: true },
+          'priority': {
+            value: 'LOW',
+            type: "CSPriority", required: true },
           'asset': { value: '00000001' },
-          'shortDescription': { value: 'Hello, World!'},
-          'description': { value: 'Foo Bar'}
+          'shortDescription': { value: 'Hello, World!', required: true },
+          'description': { value: 'Foo Bar', required: true },
       })
+      server.log.debug(gql, 'CS:UNIT TEST:CREATE :: GQL')
 
       const result = await server.inject({
         method: "POST",
