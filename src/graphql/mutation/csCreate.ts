@@ -43,7 +43,6 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
   context.app.log.debug(id.toString(), 'CS: MAIN ID')
 
   await context.app.mongo.db?.collection('activityLog').insertOne({
-    action: 'new', // CS New Record,
     date: currentDateTime,
     fields: {
       state: CSState.NEW,
@@ -53,6 +52,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
     },
     ref: id,
     table: 'cs', // CS Table
+    type: 'field',  // Field Modification Change
     user: contact
   })
 
