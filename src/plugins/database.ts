@@ -10,7 +10,7 @@ export default fp<FastifyPluginOptions>(async (fastify, opts) => {
   void fastify.register(fastifyMongodb, {
     forceClose: process.env.NODE_ENV !== 'production',
     url: `mongodb://${MONGODB_HOST}:${MONGODB_PORT}/`,
-    database: accessEnv('MONGODB_DATABASE', 'cmdb')
+    database: accessEnv('MONGODB_DATABASE', 'itil')
   })
 
   void fastify.ready().then(() => {

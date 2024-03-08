@@ -7,6 +7,7 @@ export default defineConfig({
       exclude: [
         '__tests__/__utils__/**',
         '__tests__/__data__/**',
+        '__tests__/__fixtures/**',
         'bin',
         'certs',
         'docs',

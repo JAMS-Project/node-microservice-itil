@@ -1,5 +1,5 @@
-import {csCreate} from "./mutation/csCreate.js";
-import {csQuery} from "./query/csQuery.js";
+import { csCreate } from './mutation/csCreate.js'
+import { csQuery } from './query/csQuery.js'
 
 const Mutation = {
   csCreate
