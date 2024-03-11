@@ -4,5 +4,5 @@
         "noEmit": true,
         "typeRoots": ["../node_modules/@types", "../@types"]
     },
-    "include": ["./**/*"]
+    "include": ["./**/*", "../src/**/*"]
 }

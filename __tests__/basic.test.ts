@@ -1,9 +1,9 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {IMiscResult} from "../src/declaration/interfaces";
 import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
+import graphqlQuery from "./__fixtures__/graphqlQuery";
 
 let server: FastifyInstance
 
@@ -60,9 +60,9 @@ describe('itil - basic tests', () => {
     test('create', async() => {
 
       // total length of numbers
-      const {value: valueLen } = await server.mongo.db?.collection('misc').findOne({ name: 'numberCsLen' }) as IMiscResult<number>
+      const {value: valueLen } = await server.mongo.db?.collection('misc').findOne({ name: 'numberCsLen' })
       // get number
-      let {value: currentNumber} = await server.mongo.db?.collection('misc').findOne({ name: 'numberCs' }) as IMiscResult<number>
+      let {value: currentNumber} = await server.mongo.db?.collection('misc').findOne({ name: 'numberCs' })
       // increase count by one
       currentNumber++
       // update the database
@@ -90,11 +90,41 @@ describe('itil - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      console.log(result.body)
+      expect(result.json<{ data: { csCreate: boolean }}>().data.csCreate).toBe(true)
 
     })
 
-    test.todo('query')
+    test('query - all', async () => {
+
+      const gql = graphqlQuery('csQuery', ['number'])
+      server.log.debug(gql, 'CS:UNIT TEST:QUERY :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { csQuery: [{ number: string}] }}>().data.csQuery[0].number).toBe("CS0000001")
+
+    })
+
+    test('query - single', async () => {
+
+      const gql = graphqlQuery('csQuery', ['number'], {
+        'number': { value: `CS0000001` }
+      })
+      console.log(gql)
+      server.log.debug(gql, 'CS:UNIT TEST:QUERY :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { csQuery: [{ number: string}] }}>().data.csQuery[0].number).toBe("CS0000001")
+      expect(result.json<{ data: { csQuery: [{ number: string}] }}>().data.csQuery.length).toBe(1)
+
+    })
 
     test.todo('add comment')
 

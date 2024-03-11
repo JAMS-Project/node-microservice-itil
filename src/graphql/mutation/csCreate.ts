@@ -1,5 +1,5 @@
-import {CSChannel, CSPriority, CSState} from "../../declaration/enum";
-import {ICSCreateCase} from "../../declaration/interfaces";
+import {CSChannel, CSPriority, CSState} from "../../declaration/enum.js";
+import {ICSCreateCase} from "../../declaration/interfaces.js";
 
 export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<boolean> => {
 
