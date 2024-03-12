@@ -1,4 +1,4 @@
-import {CSChannel, CSPriority} from "./enum";
+import { CSChannel, CSPriority } from './enum.js'
 
 export interface IMiscResult<T> {
   // setting name
@@ -39,4 +39,17 @@ export interface ICSQuery {
   shortDescription: string
   // possibility a very long description of the issue (in markdown)
   description: string
+}
+
+export interface ICSCreateNote {
+  // display case number
+  number: string
+  // display case number
+  channel: string
+  // display case number
+  user: string
+  // type
+  type: 'note' | 'workNote'
+  // display case number
+  note: string
 }

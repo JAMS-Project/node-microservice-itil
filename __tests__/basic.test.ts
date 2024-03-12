@@ -6,6 +6,7 @@ import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 
 let server: FastifyInstance
+let csNote: string = `CS0000001`
 
 beforeAll(async () => {
   server = await buildApp(fastify())
@@ -13,10 +14,11 @@ beforeAll(async () => {
   await server.ready()
 
   // create defaults
-  await server.mongo.db?.collection('misc').deleteMany()
   await server.mongo.db?.collection('cs').deleteMany()
-  await server.mongo.db?.collection('activityLog').deleteMany()
+  await server.mongo.db?.collection('csActivityLog').deleteMany()
+  await server.mongo.db?.collection('csNotes').deleteMany()
 
+  await server.mongo.db?.collection('misc').deleteMany()
   await server.mongo.db?.collection('misc').insertOne({name: 'numberCsLen', value: 7, system: true})
   await server.mongo.db?.collection('misc').insertOne({name: 'numberIncLen', value: 7, system: true})
   await server.mongo.db?.collection('misc').insertOne({name: 'numberPrbLen', value: 7, system: true})
@@ -73,7 +75,7 @@ describe('itil - basic tests', () => {
       const gql = graphqlMutation('csCreate', {
           'number': { value: `CS${valueString}`, required: true },
           'channel': {
-            value: 'SELFSERVE',
+            value: 'SELF_SERVE',
             type: "CSChannel", required: true },
           'contact': { value: '00000001', required: true },
           'priority': {
@@ -111,10 +113,9 @@ describe('itil - basic tests', () => {
     test('query - single', async () => {
 
       const gql = graphqlQuery('csQuery', ['number'], {
-        'number': { value: `CS0000001` }
+        'number': { value: csNote }
       })
-      console.log(gql)
-      server.log.debug(gql, 'CS:UNIT TEST:QUERY :: GQL')
+      server.log.debug(gql, 'CS:UNIT TEST:QUERY SINGLE :: GQL')
 
       const result = await server.inject({
         method: "POST",
@@ -126,9 +127,43 @@ describe('itil - basic tests', () => {
 
     })
 
-    test.todo('add comment')
+    test('add note', async () => {
 
-    test.todo('add work node')
+      const gql = graphqlMutation('csCreateNote', {
+        'number': { value: csNote, required: true },
+        'channel': { value: 'WEB', type: "CSChannel", required: true },
+        'user': { value: `0000001`, required: true },
+        'type': { value: 'note', required: true },
+        'note': { value: 'New Note', required: true }
+      })
+      server.log.debug(gql, 'CS:UNIT TEST:CREATE NOTE :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { csCreateNote: boolean }}>().data.csCreateNote).toBe(true)
+
+    })
+
+    test('add work node', async () => {
+      const gql = graphqlMutation('csCreateNote', {
+        'number': { value: csNote, required: true },
+        'channel': { value: 'WEB', type: "CSChannel", required: true },
+        'user': { value: `0000001`, required: true },
+        'type': { value: 'workNote', required: true },
+        'note': { value: 'New Work Note', required: true }
+      })
+      server.log.debug(gql, 'CS:UNIT TEST:CREATE WORK NOTE :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { csCreateNote: boolean }}>().data.csCreateNote).toBe(true)
+    })
 
     describe('actions', () => {
 

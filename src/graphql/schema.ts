@@ -10,8 +10,9 @@ const schema = gql`
     }
 
     enum CSChannel {
-      SELFSERVE
+      SELF_SERVE
       WEB
+      EMAIL
       PHONE
       AI
     }
@@ -36,6 +37,7 @@ const schema = gql`
 
     extend type Mutation {
       csCreate(number: String!, channel: CSChannel!, contact: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean
+      csCreateNote(number: String!, channel: CSChannel!, user: String!, note: String!, type: String!): Boolean
     }
           
     extend type Query {
