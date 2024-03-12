@@ -23,7 +23,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
 
   const currentDateTime = new Date()
 
-  const { insertedId: id } = await context.app.mongo.db?.collection('cs').insertOne({
+  const { insertedId: id } = await context.app.mongo.db.collection('cs').insertOne({
     number,
     state: CSState.NEW, // @todo This can be override by backend users
     holdReason: '',
@@ -43,7 +43,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
 
   context.app.log.debug(id.toString(), 'CS: MAIN ID')
 
-  await context.app.mongo.db?.collection('csActivityLog').insertOne({
+  await context.app.mongo.db.collection('csActivityLog').insertOne({
     date: currentDateTime,
     fields: {
       state: CSState.NEW,

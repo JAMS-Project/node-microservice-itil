@@ -1,4 +1,4 @@
-import { CSChannel, CSPriority } from './enum.js'
+import {CSChannel, CSOnHoldReason, CSPriority, CSState} from './enum.js'
 
 export interface IMiscResult<T> {
   // setting name
@@ -52,4 +52,40 @@ export interface ICSCreateNote {
   type: 'note' | 'workNote'
   // display case number
   note: string
+}
+
+export interface ICSModifyFieldInput {
+  // state
+  state: CSState
+  // on hold reason
+  holdReason: CSOnHoldReason
+  // channel
+  channel: CSChannel
+  // ID of the user
+  user?: string
+  // escalated or not
+  escalated?: boolean
+  // asset assigned to case
+  asset?: string
+  // who is submitting this issue
+  contact?: string
+  // priority they have selected or assigned
+  priority: CSPriority
+  // id of the user assigned the case
+  assignedTo?: string
+  // assignment group
+  assignmentGroup?: string
+  // what's this about in a short description?
+  shortDescription?: string
+  // possibility a very long description of the issue (in markdown)
+  description?: string
+}
+
+export interface ICSModifyField {
+  // display case number
+  number: string
+  // field we are modifying
+  field: string
+  // the input
+  input: ICSModifyFieldInput
 }

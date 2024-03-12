@@ -6,13 +6,13 @@ export const csCreateNote = async (parent: any, args: ICSCreateNote, context: an
   // second, check to make sure the contact exists
   // @todo RabbitMQ Call to Users Service via RPC to check to make sure user exists
 
-  const { result: findCase } = await context.app.mongo.db?.collection('cs').findOne({ number })
+  const { result: findCase } = await context.app.mongo.db.collection('cs').findOne({ number })
 
   if (typeof findCase !== 'undefined') {
     const currentDateTime = new Date()
     const id = findCase._id.toString()
 
-    await context.app.mongo.db?.collection('csNotes').insertOne({
+    await context.app.mongo.db.collection('csNotes').insertOne({
       case: id,
       channel,
       date: currentDateTime,
@@ -23,7 +23,7 @@ export const csCreateNote = async (parent: any, args: ICSCreateNote, context: an
 
     // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.note" action to look at the payload
 
-    await context.app.mongo.db?.collection('csActivityLog').insertOne({
+    await context.app.mongo.db.collection('csActivityLog').insertOne({
       date: currentDateTime,
       ref: id,
       type,

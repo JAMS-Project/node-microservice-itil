@@ -1,10 +1,12 @@
 import { csCreate } from './mutation/csCreate.js'
 import { csCreateNote } from './mutation/csCreateNote.js'
+import {csModifyField} from "./mutation/csModifyField.js";
 import { csQuery } from './query/csQuery.js'
 
 const Mutation = {
   csCreate,
-  csCreateNote
+  csCreateNote,
+  csModifyField
 }
 
 const Query = {
