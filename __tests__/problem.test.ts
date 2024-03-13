@@ -19,7 +19,7 @@ afterAll(async () => {
   await server.close()
 })
 
-describe('itil - basic tests', () => {
+describe('problem - basic tests', () => {
 
   describe('fastify', () => {
 

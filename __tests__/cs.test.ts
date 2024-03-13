@@ -15,7 +15,7 @@ beforeAll(async () => {
   await server.ready()
 
   // create defaults
-  await server.mongo.db?.collection('cs').deleteMany()
+  await server.mongo.db?.collection('csItems').deleteMany()
   await server.mongo.db?.collection('csActivityLog').deleteMany()
   await server.mongo.db?.collection('csNotes').deleteMany()
 
@@ -37,7 +37,7 @@ afterAll(async () => {
   await server.close()
 })
 
-describe('itil - basic tests', () => {
+describe('cs - basic tests', () => {
 
   describe('fastify', () => {
 

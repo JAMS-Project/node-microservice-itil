@@ -5,19 +5,17 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
 
   const { number, field, input } = args
 
-  const { result: findCase } = await context.app.mongo.db.collection('cs').findOne({ 'number': number })
+  const { _id: findCase } = await context.app.mongo.db.collection('csItems').findOne({ 'number': number })
 
   if (typeof findCase !== 'undefined') {
-
+    // case id
+    const id = findCase.toString()
     // stored new values
     let data: string
 
     switch (field) {
       case 'state':
         data = CSState[input.state]
-        break
-      case 'holdReason':
-        data = CSOnHoldReason[input.holdReason]
         break
       case 'channel':
         data = CSChannel[input.channel]
@@ -29,7 +27,7 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
         throw new Error('Not able to match a valid CS field')
     }
 
-    context.app.log.debug(data, 'Data to Modify Field To')
+    context.app.log.debug('Data to Modify Field To: %s', data)
 
     return true
   } else {
