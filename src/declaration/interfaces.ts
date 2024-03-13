@@ -64,7 +64,7 @@ export interface ICSModifyFieldInput {
   // ID of the user
   user?: string
   // escalated or not
-  escalated?: boolean
+  escalated: boolean
   // asset assigned to case
   asset?: string
   // who is submitting this issue
@@ -82,10 +82,12 @@ export interface ICSModifyFieldInput {
 }
 
 export interface ICSModifyField {
+  // ID of the user
+  user: string
   // display case number
   number: string
   // field we are modifying
-  field: string
+  field: string[]
   // the input
   input: ICSModifyFieldInput
 }

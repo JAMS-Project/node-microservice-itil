@@ -18,9 +18,6 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
     // @todo RabbitMQ Call to CMDB Service via RPC to validate it exists
   }
 
-  const rCSPriority = CSPriority[priority]
-  const rSCChannel = CSChannel[channel]
-
   const currentDateTime = new Date()
 
   const { insertedId: id } = await context.app.mongo.db.collection('csItems').insertOne({
@@ -29,8 +26,8 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
     holdReason: '',
     dateCreated: currentDateTime,
     user: contact,
-    channel: rSCChannel,
-    priority: rCSPriority,
+    channel: CSChannel[channel],
+    priority: CSPriority[priority],
     escalated: false, // @todo Possible based off "field" in future or asset
     asset,
     assignedTo: '',

@@ -171,7 +171,8 @@ describe('cs - basic tests', () => {
       test('state: new --> in progress', async() => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state:  CSState.IN_PROGRESS }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - NEW --> IN PROGRESS  :: GQL')
@@ -188,7 +189,8 @@ describe('cs - basic tests', () => {
       test('state: in progress --> on hold, awaiting caller', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.ON_HOLD, holdReason: CSOnHoldReason.INFO  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
@@ -211,8 +213,9 @@ describe('cs - basic tests', () => {
 
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
-          'input': { value: { state: CSState.IN_PROGRESS  }, type: 'CSModifyFields', required: true },
+          'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { state: CSState.IN_PROGRESS, holdReason: CSOnHoldReason.UNSET  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - ON HOLD, NEED INFO --> IN PROGRESS :: GQL')
 
@@ -228,7 +231,8 @@ describe('cs - basic tests', () => {
       test('state: in progress --> proposed solution', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.SOLUTION_PROPOSED }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> SOLUTION PROPOSED :: GQL')
@@ -245,7 +249,8 @@ describe('cs - basic tests', () => {
       test('state: proposed solution --> rejected solution', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.SOLUTION_REJECTED  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION PROPOSED --> SOLUTION REJECTED :: GQL')
@@ -262,7 +267,8 @@ describe('cs - basic tests', () => {
       test('state: rejected solution --> in progress', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.IN_PROGRESS  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION REJECTED --> IN PROGRESS :: GQL')
@@ -279,7 +285,8 @@ describe('cs - basic tests', () => {
       test('state: in progress --> proposed solution', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.SOLUTION_PROPOSED }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> SOLUTION PROPOSED :: GQL')
@@ -296,7 +303,8 @@ describe('cs - basic tests', () => {
       test('state: proposed solution --> resolved', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.RESOLVED,  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION PROPOSED -->RESOLVED :: GQL')
@@ -313,7 +321,8 @@ describe('cs - basic tests', () => {
       test('state: resolved --> closed', async () => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
-          'field': { value: 'state', required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
           'input': { value: { state: CSState.CLOSED  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - RESOLVED --> CLOSED :: GQL')
