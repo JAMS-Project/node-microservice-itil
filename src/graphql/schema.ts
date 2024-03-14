@@ -40,7 +40,7 @@ const schema = gql`
       id: ID!
       number: String!
       state: Int!
-      holdReason: Int!
+      holdReason: Int
       dateCreated: String!
       channel: Int!
       user: String!
@@ -55,14 +55,14 @@ const schema = gql`
     }
     
     input CSModifyFields {
-      state: Int
-      holdReason: Int
-      channel: Int
+      state: CSState
+      holdReason: CSOnHoldReason
+      channel: CSChannel
       user: String
       escalated: Boolean
       asset: String
-      contact: Int
-      priority: Int
+      user: String
+      priority: CSPriority
       assignedTo: String
       assignmentGroup: String
       shortDescription: String
@@ -70,7 +70,7 @@ const schema = gql`
     }
 
     extend type Mutation {
-      csCreate(number: String!, channel: CSChannel!, contact: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean!
+      csCreate(number: String!, channel: CSChannel!, user: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean!
       csCreateNote(number: String!, channel: CSChannel!, user: String!, note: String!, type: String!): Boolean!
       csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean
     }

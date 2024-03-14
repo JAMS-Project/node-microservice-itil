@@ -45,7 +45,7 @@ export interface ICSCreateNote {
   // display case number
   number: string
   // display case number
-  channel: string
+  channel: CSChannel
   // display case number
   user: string
   // type

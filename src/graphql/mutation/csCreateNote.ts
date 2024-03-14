@@ -1,3 +1,4 @@
+import {CSChannel} from "../../declaration/enum.js";
 import { ICSCreateNote } from '../../declaration/interfaces.js'
 
 export const csCreateNote = async (parent: any, args: ICSCreateNote, context: any): Promise<boolean> => {
@@ -14,7 +15,7 @@ export const csCreateNote = async (parent: any, args: ICSCreateNote, context: an
 
     await context.app.mongo.db.collection('csNotes').insertOne({
       case: id,
-      channel,
+      channel: CSChannel[channel],
       date: currentDateTime,
       note,
       type,

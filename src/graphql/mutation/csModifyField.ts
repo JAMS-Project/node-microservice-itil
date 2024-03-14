@@ -10,6 +10,7 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
   const currentDateTime = new Date()
 
   let id: string | unknown
+
   const fields: {[field: string]: string | number | boolean} = {}
   const previousFields: {[field: string]: string | number | boolean} = {}
 
@@ -24,16 +25,16 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
 
       switch (fieldLoop) {
         case 'state':
-          data = input.state
+          data = CSState[input.state]
           break
         case 'channel':
-          data = input.channel
+          data = CSChannel[input.channel]
           break
         case 'priority':
-          data = input.priority
+          data = CSPriority[input.priority]
           break
         case 'holdReason':
-          data = input.holdReason
+          data = CSOnHoldReason[input.holdReason]
           break
         case 'escalated':
           data = input.escalated

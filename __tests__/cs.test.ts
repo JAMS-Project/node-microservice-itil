@@ -17,7 +17,6 @@ const checkCase = async (number: string, field: string, expectedValue: string | 
     }),
     path: "/graphql"
   })
-
   expect(result.json<{ data: { csQuery: [{ [`field`]: string | number | boolean}] }}>().data.csQuery[0][field.trim()]).toEqual(expectedValue)
   expect(result.json<{ data: { csQuery: [] }}>().data.csQuery.length).toBe(1)
 }
@@ -83,15 +82,13 @@ describe('cs - basic tests', () => {
       currentNumber++
       // update the database
       await server.mongo.db?.collection('misc').updateOne({ name: 'numberCs' }, { $set: { value: currentNumber } })
-      // zeroPad the value
-      const valueString = zeroPad(currentNumber, valueLen)
 
       const gql = graphqlMutation('csCreate', {
-          'number': { value: `CS${valueString}`, required: true },
+          'number': { value: csTestCaseNumber, required: true },
           'channel': {
             value: 'SELF_SERVE',
             type: "CSChannel", required: true },
-          'contact': { value: '00000001', required: true },
+          'user': { value: '00000001', required: true },
           'priority': {
             value: 'LOW',
             type: "CSPriority", required: true },
@@ -181,14 +178,14 @@ describe('cs - basic tests', () => {
       expect(result.json<{ data: { csCreateNote: boolean }}>().data.csCreateNote).toBe(true)
     })
 
-    describe('actions', () => {
+    describe('actions: state', () => {
 
       test('state: new --> in progress', async() => {
         const gql = graphqlMutation('csModifyField', {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state:  CSState.IN_PROGRESS }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'IN_PROGRESS' }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - NEW --> IN PROGRESS  :: GQL')
 
@@ -208,7 +205,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.ON_HOLD, holdReason: CSOnHoldReason.INFO  }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'ON_HOLD', holdReason: 'INFO'  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
 
@@ -235,7 +232,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.IN_PROGRESS, holdReason: CSOnHoldReason.UNSET  }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'IN_PROGRESS', holdReason: 'UNSET'  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - ON HOLD, NEED INFO --> IN PROGRESS :: GQL')
 
@@ -255,7 +252,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.SOLUTION_PROPOSED }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'SOLUTION_PROPOSED' }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> SOLUTION PROPOSED :: GQL')
 
@@ -275,7 +272,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.SOLUTION_REJECTED  }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'SOLUTION_REJECTED'  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION PROPOSED --> SOLUTION REJECTED :: GQL')
 
@@ -295,7 +292,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.IN_PROGRESS  }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'IN_PROGRESS'  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION REJECTED --> IN PROGRESS :: GQL')
 
@@ -315,7 +312,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.SOLUTION_PROPOSED }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'SOLUTION_PROPOSED' }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> SOLUTION PROPOSED :: GQL')
 
@@ -335,7 +332,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.RESOLVED,  }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'RESOLVED',  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION PROPOSED -->RESOLVED :: GQL')
 
@@ -355,7 +352,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
-          'input': { value: { state: CSState.CLOSED  }, type: 'CSModifyFields', required: true },
+          'input': { value: { state: 'CLOSED'  }, type: 'CSModifyFields', required: true },
         })
         server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - RESOLVED --> CLOSED :: GQL')
 
