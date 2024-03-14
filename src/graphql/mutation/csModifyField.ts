@@ -10,8 +10,8 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
   const currentDateTime = new Date()
 
   let id: string | unknown
-  const fields: {[field: string]: string | number | boolean} = {}
-  const previousFields: {[field: string]: string | number | boolean} = {}
+  const fields: {[field: string]: string | number | boolean | undefined} = {}
+  const previousFields: {[field: string]: string | number | boolean | undefined} = {}
 
   for (const fieldLoop of field) {
 
@@ -33,7 +33,7 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
           data = input.priority
           break
         case 'holdReason':
-          data = input.holdReason === -1 ? "" : input.holdReason
+          data = input.holdReason
           break
         case 'escalated':
           data = input.escalated
@@ -55,6 +55,12 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
       fields[fieldLoop] = data
       previousFields[fieldLoop] = findCase[fieldLoop]
 
+      console.log('New Data', fields)
+      console.log('Previous Data', previousFields)
+
+      // update the case
+      await context.app.mongo.db.collection('csItems').updateOne( { number },{$set: {...fields }})
+
     } else {
       throw  new Error('Number case not found.')
     }
@@ -64,9 +70,6 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
   if (typeof id === 'undefined') {
     throw  new Error('Object MongoDB ID not found.')
   }
-
-  // update the case
-  await context.app.mongo.db.collection('csItems').updateOne( { number },{$set: {...fields, ...previousFields}})
 
   // update the activity log
   await context.app.mongo.db.collection('csActivityLog').insertOne({

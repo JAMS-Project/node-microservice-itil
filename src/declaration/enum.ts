@@ -23,7 +23,7 @@ export enum CSState {
 }
 
 export enum CSOnHoldReason {
-  UNSET= -1,
+  UNSET,
   INFO,
   VENDOR,
   RE_ASSIGNMENT,

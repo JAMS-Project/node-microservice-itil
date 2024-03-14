@@ -40,14 +40,14 @@ const schema = gql`
       id: ID!
       number: String!
       state: Int!
-      holdReason: String!
+      holdReason: Int!
       dateCreated: String!
-      channel: String!
+      channel: Int!
       user: String!
       escalated: Boolean!
       asset: String
-      contact: String!
-      priority: String!
+      contact: Int!
+      priority: Int!
       assignedTo: String!
       assignmentGroup: String!
       shortDescription: String!
