@@ -52,6 +52,7 @@ const schema = gql`
       channel: Int!
       user: String!
       escalated: Boolean!
+      activityLog: String!
       asset: String
       contact: Int!
       priority: Int!
@@ -59,6 +60,9 @@ const schema = gql`
       assignmentGroup: String!
       shortDescription: String!
       description: String!
+      resolveDate: String
+      resolveNotes: String
+      resolvedBy: String
     }
     
     input CSModifyFields {
@@ -75,11 +79,45 @@ const schema = gql`
       shortDescription: String
       description: String
     }
-
+    
+    input INCRequiredFields {
+      number: String!
+      channel: GlobalChannel!
+      user: String!
+      category: String!
+      impact: Int!
+      urgency: Int!
+      shortDescription: String!
+      description: String!
+    }
+    
+    input INCModifyFields {
+      state: Int
+      holdReason: Int
+      channel: Int
+      user: String
+      escalated: Boolean
+      asset: String
+      category: String
+      subCategory: String
+      problem: String
+      change: String
+      changeCaused: String
+      service: String
+      offering: String
+      assignedTo: String
+      assignmentGroup: String 
+      incParent: String
+      incChild: [String!]
+    }
+ 
     extend type Mutation {
-      csCreate(number: String!, channel: GlobalChannel!, user: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean!
+      # CS
+      csCreate(number: String!, channel: GlobalChannel!, user: String!, priority: CSPriority, shortDescription: String!, description: String!, optional: CSModifyFields): Boolean!
       csCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
-      csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean
+      csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean!
+      # INC
+      incCreate(required: INCRequiredFields, optional: INCModifyFields): Boolean!
     }
           
     extend type Query {

@@ -5,7 +5,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
   const { number, channel, contact, priority, asset, shortDescription, description } = args
 
   // first, lets check to make sure that the number isn't already used
-  const result = await context.app.mongo.db.collection('cs').countDocuments({ number })
+  const result = await context.app.mongo.db.collection('csItems').countDocuments({ number })
   if (result > 0) {
     throw new Error('Number already being used. Unable to submit.')
   }

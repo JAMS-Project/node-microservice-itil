@@ -1,4 +1,4 @@
-import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState} from './enum.js'
+import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState, GlobalImpact, GlobalUrgency} from './enum.js'
 
 export interface IMiscResult<T> {
   // setting name
@@ -90,4 +90,61 @@ export interface ICSModifyField {
   field: string[]
   // the input
   input: ICSModifyFieldInput
+}
+
+export interface IINCCreateRequired {
+  // display case number
+  number: string
+  // channel in which submitted
+  channel: GlobalChannel
+  // category
+  category: string
+  // impact
+  impact: GlobalImpact
+  // urgency
+  urgency: GlobalUrgency
+  // who is submitting this issue
+  contact: string
+  // what's this about in a short description?
+  shortDescription: string
+  // possibility a very long description of the issue (in markdown)
+  description: string
+}
+
+export interface IINCModifyFieldInput {
+  // state
+  state?: number
+  // on hold reason
+  holdReason?: number
+  // channel
+  channel: number
+  // ID of the user
+  user?: string
+  // escalated or not
+  escalated: boolean
+  // asset assigned to case
+  asset?: string
+  // category
+  category?: string
+  // possible sub category from category
+  subCategory?: string
+  // linked to a problem
+  problem?: string
+  // is there a change control created from this incident?
+  change?: string
+  // is there a change control that caused this incident?
+  changeCaused?: string
+  // service effected
+  service?: string
+  // the offering possible from the selected service
+  offering?: string
+  // id of the user assigned the case
+  assignedTo?: string
+  // assignment group
+  assignmentGroup?: string
+}
+
+export interface IINCCreate {
+  required: IINCCreateRequired
+  optional?: IINCModifyFieldInput
 }

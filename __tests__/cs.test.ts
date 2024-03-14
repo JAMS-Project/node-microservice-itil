@@ -70,7 +70,6 @@ describe('cs - basic tests', () => {
           'priority': {
             value: 'LOW',
             type: "CSPriority", required: true },
-          'asset': { value: '00000001' },
           'shortDescription': { value: 'Hello, World!', required: true },
           'description': { value: 'Foo Bar', required: true },
       })

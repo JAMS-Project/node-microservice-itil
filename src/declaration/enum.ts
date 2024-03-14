@@ -39,3 +39,17 @@ export enum INCState {
   RESOLVED,
   CLOSED
 }
+
+export enum GlobalImpact {
+  LOW,
+  MODERATE,
+  HIGH,
+  CRITICAL
+}
+
+export enum GlobalUrgency {
+  LOW,
+  MODERATE,
+  HIGH,
+  CRITICAL
+}
