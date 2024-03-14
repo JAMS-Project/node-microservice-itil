@@ -2,6 +2,13 @@ import { gql } from 'mercurius-codegen'
 
 const schema = gql`
 
+    enum GlobalChannel {
+      SELF_SERVE,
+      WEB,
+      PHONE,
+      AI
+    }
+
     enum CSPriority {
       LOW,
       MODERATE,
@@ -9,11 +16,11 @@ const schema = gql`
       CRITICAL
     }
     
-    enum CSChannel {
-      SELF_SERVE,
-      WEB,
-      PHONE,
-      AI
+    enum INCPriority {
+      LOW,
+      MODERATE,
+      HIGH,
+      CRITICAL
     }
     
     enum CSState {
@@ -57,7 +64,7 @@ const schema = gql`
     input CSModifyFields {
       state: CSState
       holdReason: CSOnHoldReason
-      channel: CSChannel
+      channel: GlobalChannel
       user: String
       escalated: Boolean
       asset: String
@@ -70,8 +77,8 @@ const schema = gql`
     }
 
     extend type Mutation {
-      csCreate(number: String!, channel: CSChannel!, user: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean!
-      csCreateNote(number: String!, channel: CSChannel!, user: String!, note: String!, type: String!): Boolean!
+      csCreate(number: String!, channel: GlobalChannel!, user: String!, priority: CSPriority, asset: String, shortDescription: String!, description: String!): Boolean!
+      csCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
       csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean
     }
           

@@ -1,4 +1,4 @@
-import {CSChannel, CSOnHoldReason, CSPriority, CSState} from "../../declaration/enum.js";
+import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState} from "../../declaration/enum.js";
 import {ICSModifyField} from "../../declaration/interfaces.js";
 
 export const csModifyField = async (_parent: any, args: ICSModifyField, context: any): Promise<boolean> => {
@@ -28,10 +28,10 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
           data = CSState[input.state]
           break
         case 'channel':
-          data = CSChannel[input.channel]
+          data = GlobalChannel[input.channel]
           break
         case 'priority':
-          data = CSPriority[input.priority]
+          data = GlobalPriority[input.priority]
           break
         case 'holdReason':
           data = CSOnHoldReason[input.holdReason]

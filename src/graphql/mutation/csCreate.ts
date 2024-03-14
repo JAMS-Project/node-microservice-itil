@@ -1,4 +1,4 @@
-import {CSChannel, CSOnHoldReason, CSPriority, CSState} from '../../declaration/enum.js'
+import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState} from '../../declaration/enum.js'
 import { ICSCreateCase } from '../../declaration/interfaces.js'
 
 export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<boolean> => {
@@ -26,8 +26,8 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
     holdReason: CSOnHoldReason.UNSET,
     dateCreated: currentDateTime,
     user: contact,
-    channel: CSChannel[channel],
-    priority: CSPriority[priority],
+    channel: GlobalChannel[channel],
+    priority: GlobalPriority[priority],
     escalated: false, // @todo Possible based off "field" in future or asset
     asset,
     assignedTo: '',

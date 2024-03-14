@@ -1,9 +1,13 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
+import {INCState} from "../src/declaration/enum";
+import graphqlMutation from "./__fixtures__/graphqlMutation";
+import graphqlQuery from "./__fixtures__/graphqlQuery";
+import {checkCase} from "./__utils__/checkCase";
 
 let server: FastifyInstance
-let csTestCaseNumber: string = `INC0000001`
+let incTestCaseNumber: string = `INC0000001`
 
 beforeAll(async () => {
   server = await buildApp(fastify())
@@ -46,17 +50,137 @@ describe('incident - basic tests', () => {
 
   describe('incident', () => {
 
-    test.todo('create')
+    test('create', async() => {
 
-    test.todo('query')
+      // total length of numbers
+      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
+      // get number
+      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
+      // increase count by one
+      currentNumber++
+      // update the database
+      await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
 
-    test.todo('copy with new incident number')
+      const gql = graphqlMutation('incCreate', {
+        'number': { value: incTestCaseNumber, required: true },
+        'channel': {
+          value: 'SELF_SERVE',
+          type: "GlobalChannel", required: true },
+        'user': { value: '00000001', required: true },
+        'priority': {
+          value: 'LOW',
+          type: "INCPriority", required: true },
+        'asset': { value: '00000001' },
+        'shortDescription': { value: 'Hello, World!', required: true },
+        'description': { value: 'Foo Bar', required: true },
+      })
+      server.log.debug(gql, 'CS:UNIT TEST:CREATE :: GQL')
 
-    test.todo('add comment')
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { incCreate: boolean }}>().data.incCreate).toBe(true)
 
-    test.todo('add work node')
+      await checkCase(server, incTestCaseNumber, 'state', INCState.NEW)
 
-    describe('actions', () => {
+    })
+
+    test('query - all', async () => {
+
+      const gql = graphqlQuery('incQuery', ['number'])
+      server.log.debug(gql, 'CS:UNIT TEST:QUERY :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { incQuery: [{ number: string}] }}>().data.incQuery[0].number).toBe("INC0000001")
+
+    })
+
+    test('query - single', async () => {
+
+      const gql = graphqlQuery('incQuery', ['number'], {
+        'number': { value: incTestCaseNumber }
+      })
+      server.log.debug(gql, 'CS:UNIT TEST:QUERY SINGLE :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { incQuery: [{ number: string}] }}>().data.incQuery[0].number).toBe("INC0000001")
+      expect(result.json<{ data: { incQuery: [{ number: string}] }}>().data.incQuery.length).toBe(1)
+
+    })
+
+    test('add note', async () => {
+
+      const gql = graphqlMutation('incCreateNote', {
+        'number': { value: incTestCaseNumber, required: true },
+        'channel': { value: 'WEB', type: "GlobalChannel", required: true },
+        'user': { value: `0000001`, required: true },
+        'type': { value: 'note', required: true },
+        'note': { value: 'New Note', required: true }
+      })
+      server.log.debug(gql, 'CS:UNIT TEST:CREATE NOTE :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { incCreateNote: boolean }}>().data.incCreateNote).toBe(true)
+
+    })
+
+    test('add work node', async () => {
+      const gql = graphqlMutation('incCreateNote', {
+        'number': { value: incTestCaseNumber, required: true },
+        'channel': { value: 'WEB', type: "GlobalChannel", required: true },
+        'user': { value: `0000001`, required: true },
+        'type': { value: 'workNote', required: true },
+        'note': { value: 'New Work Note', required: true }
+      })
+      server.log.debug(gql, 'CS:UNIT TEST:CREATE WORK NOTE :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { incCreateNote: boolean }}>().data.incCreateNote).toBe(true)
+    })
+
+    describe('actions: copy', () => {
+
+      test.todo('... to a new incident')
+
+    })
+
+    describe('actions: create', () => {
+
+      test.todo('... child')
+
+      test.todo('... problem')
+
+      test.todo('... change')
+
+      test.todo('... problem')
+
+      test.todo('... task')
+
+    })
+
+
+
+    test.todo('new incident to another incident as a child')
+
+    describe('actions: state', () => {
 
       test.todo('state: new --> in progress')
 
@@ -71,6 +195,22 @@ describe('incident - basic tests', () => {
       test.todo('state: in progress --> resolved, perm')
 
       test.todo('state: resolved --> closed')
+
+    })
+
+    describe('actions: sub-applications', () => {
+
+      test.todo('... outage')
+
+      test.todo('... communication')
+
+      describe('major incident', () => {
+
+        test.todo('... proposed')
+
+        test.todo('... promote')
+
+      })
 
     })
 

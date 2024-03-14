@@ -4,21 +4,10 @@ import buildApp from '../src/app'
 import {CSOnHoldReason, CSState} from "../src/declaration/enum";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
+import {checkCase} from "./__utils__/checkCase";
 
 let server: FastifyInstance
 let csTestCaseNumber: string = `CS0000001`
-
-const checkCase = async (number: string, field: string, expectedValue: string | number | boolean) => {
-  const result = await server.inject({
-    method: "POST",
-    body: graphqlQuery('csQuery', [field], {
-      'number': { value: number }
-    }),
-    path: "/graphql"
-  })
-  expect(result.json<{ data: { csQuery: [{ [`field`]: string | number | boolean}] }}>().data.csQuery[0][field.trim()]).toEqual(expectedValue)
-  expect(result.json<{ data: { csQuery: [] }}>().data.csQuery.length).toBe(1)
-}
 
 beforeAll(async () => {
   server = await buildApp(fastify())
@@ -76,7 +65,7 @@ describe('cs - basic tests', () => {
           'number': { value: csTestCaseNumber, required: true },
           'channel': {
             value: 'SELF_SERVE',
-            type: "CSChannel", required: true },
+            type: "GlobalChannel", required: true },
           'user': { value: '00000001', required: true },
           'priority': {
             value: 'LOW',
@@ -94,7 +83,7 @@ describe('cs - basic tests', () => {
       })
       expect(result.json<{ data: { csCreate: boolean }}>().data.csCreate).toBe(true)
 
-      await checkCase(csTestCaseNumber, 'state', CSState.NEW)
+      await checkCase(server,csTestCaseNumber, 'state', CSState.NEW)
 
     })
 
@@ -133,7 +122,7 @@ describe('cs - basic tests', () => {
 
       const gql = graphqlMutation('csCreateNote', {
         'number': { value: csTestCaseNumber, required: true },
-        'channel': { value: 'WEB', type: "CSChannel", required: true },
+        'channel': { value: 'WEB', type: "GlobalChannel", required: true },
         'user': { value: `0000001`, required: true },
         'type': { value: 'note', required: true },
         'note': { value: 'New Note', required: true }
@@ -152,7 +141,7 @@ describe('cs - basic tests', () => {
     test('add work node', async () => {
       const gql = graphqlMutation('csCreateNote', {
         'number': { value: csTestCaseNumber, required: true },
-        'channel': { value: 'WEB', type: "CSChannel", required: true },
+        'channel': { value: 'WEB', type: "GlobalChannel", required: true },
         'user': { value: `0000001`, required: true },
         'type': { value: 'workNote', required: true },
         'note': { value: 'New Work Note', required: true }
@@ -185,7 +174,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.IN_PROGRESS)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 
       })
 
@@ -205,8 +194,8 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.ON_HOLD)
-        await checkCase(csTestCaseNumber, 'holdReason', CSOnHoldReason.INFO)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.ON_HOLD)
+        await checkCase(server, csTestCaseNumber, 'holdReason', CSOnHoldReason.INFO)
 
       })
 
@@ -232,7 +221,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.IN_PROGRESS)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 
       })
 
@@ -252,7 +241,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
 
       })
 
@@ -272,7 +261,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.SOLUTION_REJECTED)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.SOLUTION_REJECTED)
 
       })
 
@@ -292,7 +281,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.IN_PROGRESS)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 
       })
 
@@ -312,7 +301,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
 
       })
 
@@ -332,7 +321,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.RESOLVED)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.RESOLVED)
 
       })
 
@@ -352,9 +341,17 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(csTestCaseNumber, 'state', CSState.CLOSED)
+        await checkCase(server, csTestCaseNumber, 'state', CSState.CLOSED)
 
       })
+
+    })
+
+    describe('actions: create', () => {
+
+      test.todo('... incident')
+
+      test.todo('... request')
 
     })
 

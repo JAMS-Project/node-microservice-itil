@@ -1,11 +1,11 @@
-export enum CSPriority {
+export enum GlobalPriority {
   LOW,
   MODERATE,
   HIGH,
   CRITICAL
 }
 
-export enum CSChannel {
+export enum GlobalChannel {
   SELF_SERVE,
   WEB,
   PHONE,
@@ -30,4 +30,12 @@ export enum CSOnHoldReason {
   PENDING_SCHEDULED,
   SCHEDULED,
   DEPENDENCY
+}
+
+export enum INCState {
+  NEW,
+  IN_PROGRESS,
+  ON_HOLD,
+  RESOLVED,
+  CLOSED
 }

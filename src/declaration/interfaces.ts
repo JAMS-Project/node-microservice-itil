@@ -1,4 +1,4 @@
-import {CSChannel, CSOnHoldReason, CSPriority, CSState} from './enum.js'
+import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState} from './enum.js'
 
 export interface IMiscResult<T> {
   // setting name
@@ -11,11 +11,11 @@ export interface ICSCreateCase {
   // display case number
   number: string
   // channel in which submitted
-  channel: CSChannel
+  channel: GlobalChannel
   // who is submitting this issue
   contact: string
   // priority they have selected or assigned
-  priority: CSPriority
+  priority: GlobalPriority
   // asset assigned to case
   asset?: string
   // what's this about in a short description?
@@ -45,7 +45,7 @@ export interface ICSCreateNote {
   // display case number
   number: string
   // display case number
-  channel: CSChannel
+  channel: GlobalChannel
   // display case number
   user: string
   // type
@@ -60,7 +60,7 @@ export interface ICSModifyFieldInput {
   // on hold reason
   holdReason: CSOnHoldReason
   // channel
-  channel: CSChannel
+  channel: GlobalChannel
   // ID of the user
   user?: string
   // escalated or not
@@ -70,7 +70,7 @@ export interface ICSModifyFieldInput {
   // who is submitting this issue
   contact?: string
   // priority they have selected or assigned
-  priority: CSPriority
+  priority: GlobalPriority
   // id of the user assigned the case
   assignedTo?: string
   // assignment group
