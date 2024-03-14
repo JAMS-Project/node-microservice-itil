@@ -2,7 +2,6 @@ import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
 import {CSOnHoldReason, CSState} from "../src/declaration/enum";
-import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 
@@ -23,25 +22,15 @@ const checkCase = async (number: string, field: string, expectedValue: string | 
 
 beforeAll(async () => {
   server = await buildApp(fastify())
-
   await server.ready()
 
-  // create defaults
-  await server.mongo.db?.collection('csItems').deleteMany()
-  await server.mongo.db?.collection('csActivityLog').deleteMany()
-  await server.mongo.db?.collection('csNotes').deleteMany()
+  await server.mongo.db.collection('csItems').deleteMany()
+  await server.mongo.db.collection('csActivityLog').deleteMany()
+  await server.mongo.db.collection('csNotes').deleteMany()
 
-  await server.mongo.db?.collection('misc').deleteMany()
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberCsLen', value: 7, system: true})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberIncLen', value: 7, system: true})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberPrbLen', value: 7, system: true})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberChgLen', value: 7, system: true})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberCs', value: 0, system: false})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberInc', value: 0, system: false})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberPrb', value: 0, system: false})
-  await server.mongo.db?.collection('misc').insertOne({name: 'numberChg', value: 0, system: false})
-  // end defaults
-
+  await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberCs/ } } )
+  await server.mongo.db.collection('misc').insertOne({name: 'numberCsLen', value: 7, system: true})
+  await server.mongo.db.collection('misc').insertOne({name: 'numberCs', value: 0, system: true})
 })
 
 afterAll(async () => {
@@ -75,13 +64,13 @@ describe('cs - basic tests', () => {
     test('create', async() => {
 
       // total length of numbers
-      const {value: valueLen } = await server.mongo.db?.collection('misc').findOne({ name: 'numberCsLen' })
+      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberCsLen' })
       // get number
-      let {value: currentNumber} = await server.mongo.db?.collection('misc').findOne({ name: 'numberCs' })
+      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberCs' })
       // increase count by one
       currentNumber++
       // update the database
-      await server.mongo.db?.collection('misc').updateOne({ name: 'numberCs' }, { $set: { value: currentNumber } })
+      await server.mongo.db.collection('misc').updateOne({ name: 'numberCs' }, { $set: { value: currentNumber } })
 
       const gql = graphqlMutation('csCreate', {
           'number': { value: csTestCaseNumber, required: true },

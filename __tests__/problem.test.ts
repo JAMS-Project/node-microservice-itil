@@ -12,6 +12,10 @@ let csTestCaseNumber: string = `CS0000001`
 beforeAll(async () => {
   server = await buildApp(fastify())
   await server.ready()
+
+  await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberPro/ } } )
+  await server.mongo.db.collection('misc').insertOne({name: 'numberPrbLen', value: 7, system: true})
+  await server.mongo.db.collection('misc').insertOne({name: 'numberPrb', value: 0, system: true})
 })
 
 afterAll(async () => {
