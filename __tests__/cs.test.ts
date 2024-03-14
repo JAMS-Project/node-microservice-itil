@@ -9,7 +9,7 @@ import graphqlQuery from "./__fixtures__/graphqlQuery";
 let server: FastifyInstance
 let csTestCaseNumber: string = `CS0000001`
 
-const checkCase = async (number: string, field: string, expectedValue: string | number | boolean | undefined) => {
+const checkCase = async (number: string, field: string, expectedValue: string | number | boolean) => {
   const result = await server.inject({
     method: "POST",
     body: graphqlQuery('csQuery', [field], {
@@ -245,15 +245,6 @@ describe('cs - basic tests', () => {
           path: "/graphql"
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        const resultTwo = await server.inject({
-          method: "POST",
-          body: graphqlQuery('csQuery', ['holdReason'], {
-            'number': { value: csTestCaseNumber }
-          }),
-          path: "/graphql"
-        })
-        console.log(resultTwo.body)
 
         await checkCase(csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 

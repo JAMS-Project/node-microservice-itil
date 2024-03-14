@@ -10,8 +10,8 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
   const currentDateTime = new Date()
 
   let id: string | unknown
-  const fields: {[field: string]: string | number | boolean | undefined} = {}
-  const previousFields: {[field: string]: string | number | boolean | undefined} = {}
+  const fields: {[field: string]: string | number | boolean} = {}
+  const previousFields: {[field: string]: string | number | boolean} = {}
 
   for (const fieldLoop of field) {
 
@@ -50,16 +50,8 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
           throw new Error('Not able to match a valid CS field')
       }
 
-      // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
-
       fields[fieldLoop] = data
       previousFields[fieldLoop] = findCase[fieldLoop]
-
-      console.log('New Data', fields)
-      console.log('Previous Data', previousFields)
-
-      // update the case
-      await context.app.mongo.db.collection('csItems').updateOne( { number },{$set: {...fields }})
 
     } else {
       throw  new Error('Number case not found.')
@@ -71,6 +63,11 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
     throw  new Error('Object MongoDB ID not found.')
   }
 
+  // update the case
+  await context.app.mongo.db.collection('csItems').updateOne( { number },{$set: {...fields }})
+
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.modify" action to look at the payload
+
   // update the activity log
   await context.app.mongo.db.collection('csActivityLog').insertOne({
     date: currentDateTime,
@@ -80,6 +77,8 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
     type: 'field', // Field Modification Change
     user
   })
+
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
 
   return true
 
