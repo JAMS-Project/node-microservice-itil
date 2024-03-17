@@ -1,7 +1,7 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {CSState, GlobalChannel, INCState} from "../src/declaration/enum";
+import {CSState, GlobalChannel, GlobalOnHoldReason, INCState} from "../src/declaration/enum";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
@@ -250,13 +250,113 @@ describe('incident - basic tests', () => {
 
       })
 
-      test.todo('state: in progress --> on hold, awaiting caller')
+      test('state: in progress --> on hold, awaiting caller', async() => {
 
-      test.todo('state: in progress --> on hold, awaiting vendor')
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['state','holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { state: 'ON_HOLD', holdReason: 'INFO' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
 
-      test.todo('state: in progress --> on hold, awaiting scheduling')
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
 
-      test.todo('state: on hold --> in progress, clear on hold reason')
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.ON_HOLD)
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'holdReason', GlobalOnHoldReason.INFO)
+
+      })
+
+      test('state: in progress --> on hold, awaiting vendor', async () => {
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { holdReason: 'VENDOR' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.ON_HOLD)
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'holdReason', GlobalOnHoldReason.VENDOR)
+      })
+
+      test('state: in progress --> on hold, awaiting re-assignment', async() => {
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { holdReason: 'RE_ASSIGNMENT' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.ON_HOLD)
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'holdReason', GlobalOnHoldReason.RE_ASSIGNMENT)
+      })
+
+      test('state: in progress --> on hold, awaiting scheduling', async() => {
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { holdReason: 'PENDING_SCHEDULED' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.ON_HOLD)
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'holdReason', GlobalOnHoldReason.PENDING_SCHEDULED)
+      })
+
+      test('state: on hold --> in progress, clear on hold reason', async () => {
+
+        // On hold, awaiting caller state can flip to this state manually,
+        // or can be trigger by someone "adding a note" to the INC case.
+        // This would come in the form
+        // of a rabbitmq listing to itil.inc.note listener
+
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { state: 'IN_PROGRESS', holdReason: 'UNSET'  }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - ON HOLD, NEED INFO --> IN PROGRESS :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.IN_PROGRESS)
+
+      })
 
       test.todo('state: in progress --> resolved, perm')
 
