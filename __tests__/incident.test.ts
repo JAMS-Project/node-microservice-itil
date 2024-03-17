@@ -1,7 +1,7 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {GlobalChannel, INCState} from "../src/declaration/enum";
+import {CSState, GlobalChannel, INCState} from "../src/declaration/enum";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
@@ -18,7 +18,6 @@ beforeAll(async () => {
   await server.mongo.db.collection('incActivityLog').deleteMany()
   await server.mongo.db.collection('incNotes').deleteMany()
   await server.mongo.db.collection('incDefaults').deleteMany()
-
 
   await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberInc/ } } )
   await server.mongo.db.collection('misc').insertOne({name: 'numberIncLen', value: 7, system: true})
@@ -95,7 +94,7 @@ describe('incident - basic tests', () => {
 
     })
 
-    test('new incident to another incident as a child', async () => {
+    test('create incident to another incident as a child', async () => {
 
       // get number
       let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
@@ -123,7 +122,7 @@ describe('incident - basic tests', () => {
           value: {
             parent: 'INC0000001'
           },
-          type: 'INCModifyFields'
+          type: 'INCOptionalFields'
         }
       })
       server.log.debug(gql, 'INC:UNIT TEST:CREATE AS CHILD :: GQL')
@@ -228,23 +227,28 @@ describe('incident - basic tests', () => {
 
     })
 
-    describe('actions: create', () => {
-
-      test.todo('... child')
-
-      test.todo('... problem')
-
-      test.todo('... change')
-
-      test.todo('... problem')
-
-      test.todo('... task')
-
-    })
-
     describe('actions: state', () => {
 
-      test.todo('state: new --> in progress')
+      test('state: new --> in progress', async () => {
+
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { state: 'IN_PROGRESS' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - NEW --> IN PROGRESS  :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.IN_PROGRESS)
+
+      })
 
       test.todo('state: in progress --> on hold, awaiting caller')
 
@@ -273,6 +277,12 @@ describe('incident - basic tests', () => {
         test.todo('... promote')
 
       })
+
+      test.todo('... problem')
+
+      test.todo('... change')
+
+      test.todo('... task')
 
     })
 

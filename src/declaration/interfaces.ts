@@ -79,7 +79,7 @@ export interface ICSModifyField {
   input: ICSModifyFieldInput
 }
 
-export interface IINCCreateRequired {
+export interface IINCRequiredFieldInput {
   // display case number
   number: string
   // channel in which submitted
@@ -98,7 +98,7 @@ export interface IINCCreateRequired {
   description: string
 }
 
-export interface IINCModifyFieldInput {
+export interface IINCOptionalFieldInput {
   // state
   state?: number
   // on hold reason
@@ -134,14 +134,14 @@ export interface IINCModifyFieldInput {
 }
 
 export interface IINCFields {
-  required: IINCCreateRequired
-  optional?: IINCModifyFieldInput
+  required: IINCRequiredFieldInput
+  optional?: IINCOptionalFieldInput
 }
 
 export interface IINCModifyFields {
   number: string
-  required: IINCCreateRequired
-  optional?: IINCModifyFieldInput
+  required: IINCRequiredFieldInput
+  optional?: IINCOptionalFieldInput
 }
 
 export interface ICreateNote {

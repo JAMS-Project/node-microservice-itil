@@ -1,3 +1,4 @@
-import { IINCCreateRequired, IINCModifyFieldInput } from './interfaces'
+import { IINCRequiredFieldInput, IINCOptionalFieldInput } from './interfaces'
 
-export type IINCQuery = IINCCreateRequired & IINCModifyFieldInput
+export type IINCQuery = IINCRequiredFieldInput & IINCOptionalFieldInput
+export type IINCModify = IINCRequiredFieldInput & IINCOptionalFieldInput

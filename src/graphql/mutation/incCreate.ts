@@ -3,7 +3,7 @@ import {
   GlobalImpact,
   GlobalUrgency
 } from '../../declaration/enum.js'
-import { IINCFields, IINCModifyFieldInput } from '../../declaration/interfaces.js'
+import { IINCFields, IINCOptionalFieldInput } from '../../declaration/interfaces.js'
 
 export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<boolean> => {
   const { required, optional: inputOptional } = args
@@ -20,7 +20,7 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     outputObject[item.name] = item.value
   })
 
-  const optional: IINCModifyFieldInput = {
+  const optional: IINCOptionalFieldInput = {
     asset: '',
     assignedTo: '',
     assignmentGroup: '',

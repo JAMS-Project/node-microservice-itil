@@ -10,8 +10,9 @@ const schema = schemaEnum + schemaInput + schemaType + gql`
       csCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
       csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean!
       # INC
-      incCreate(required: INCRequiredFields, optional: INCModifyFields): Boolean!
+      incCreate(required: INCRequiredFields, optional: INCOptionalFields): Boolean!
       incCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
+      incModifyField(number: String!, user: String!, field: [String!]!, input: INCModifyFields!): Boolean!
     }
           
     extend type Query {

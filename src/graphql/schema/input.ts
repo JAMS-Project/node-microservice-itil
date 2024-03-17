@@ -27,7 +27,7 @@ const schemaInput = gql`
       description: String!
     }
     
-    input INCModifyFields {
+    input INCOptionalFields {
       state: Int
       holdReason: Int
       channel: Int
@@ -44,7 +44,36 @@ const schemaInput = gql`
       assignmentGroup: String 
       parent: String
       child: [String!]
-    }  
+    }
+    
+    input INCModifyFields {
+      channel: GlobalChannel
+      user: String
+      category: String
+      impact: GlobalImpact
+      urgency: GlobalUrgency
+      shortDescription: String
+      description: String
+      state: Int
+      holdReason: Int
+      channel: Int
+      escalated: Boolean
+      asset: String
+      category: String
+      subCategory: String
+      problem: String
+      change: String
+      changeCaused: String
+      service: String
+      offering: String
+      assignedTo: String
+      assignmentGroup: String 
+      parent: String
+      child: [String!]
+    }
+    
+    
+    
 `
 
 export default schemaInput
