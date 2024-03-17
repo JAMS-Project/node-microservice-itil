@@ -48,6 +48,24 @@ const schemaEnum = gql`
       SCHEDULED,
       DEPENDENCY
     }
+    
+    enum INCState {
+      NEW,
+      IN_PROGRESS,
+      RESOLVED,
+      ON_HOLD,
+      CLOSED
+    }
+    
+    enum INCOnHoldReason {
+      UNSET,
+      INFO,
+      VENDOR,
+      RE_ASSIGNMENT,
+      PENDING_SCHEDULED,
+      SCHEDULED,
+      DEPENDENCY
+    }
  `
 
 export default schemaEnum

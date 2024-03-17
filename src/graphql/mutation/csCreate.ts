@@ -1,4 +1,4 @@
-import { GlobalChannel, CSOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
+import { GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
 import { ICSCreateCase } from '../../declaration/interfaces.js'
 
 export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<boolean> => {
@@ -23,7 +23,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
   const { insertedId: id } = await context.app.mongo.db.collection('csItems').insertOne({
     number,
     state: CSState.NEW, // @todo This can be override by backend users
-    holdReason: CSOnHoldReason.UNSET,
+    holdReason: GlobalOnHoldReason.UNSET,
     dateCreated: currentDateTime,
     user: contact,
     channel: GlobalChannel[channel],

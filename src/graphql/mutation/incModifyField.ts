@@ -1,10 +1,10 @@
-import { GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
-import { ICSModifyField } from '../../declaration/interfaces.js'
+import {GlobalChannel, GlobalImpact, GlobalOnHoldReason, GlobalUrgency, INCState} from "../../declaration/enum.js";
+import {IINCModifyFields} from "../../declaration/interfaces.js";
 
-export const csModifyField = async (_parent: any, args: ICSModifyField, context: any): Promise<boolean> => {
+export const incModifyField = async (_parent: any, args: IINCModifyFields, context: any): Promise<boolean> => {
   const { number, user, field, input } = args
 
-  const findCase = await context.app.mongo.db.collection('csItems').findOne({ number })
+  const findCase = await context.app.mongo.db.collection('incItems').findOne({ number })
 
   const currentDateTime = new Date()
 
@@ -21,17 +21,20 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
       let data: string | number | boolean
 
       switch (fieldLoop) {
-        case 'state':
-          data = CSState[input.state]
-          break
         case 'channel':
           data = GlobalChannel[input.channel]
           break
-        case 'priority':
-          data = GlobalPriority[input.priority]
+        case 'urgency':
+          data = GlobalUrgency[input.urgency]
+          break
+        case 'impact':
+          data = GlobalImpact[input.impact]
           break
         case 'holdReason':
           data = GlobalOnHoldReason[input.holdReason]
+          break
+        case 'state':
+          data = INCState[input.state]
           break
         case 'escalated':
           data = input.escalated
@@ -45,7 +48,7 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
           data = input[fieldLoop] as string
           break
         default:
-          throw new Error('Not able to match a valid CS field')
+          throw new Error('Not able to match a valid INC field')
       }
 
       fields[fieldLoop] = data
@@ -60,12 +63,12 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
   }
 
   // update the case
-  await context.app.mongo.db.collection('csItems').updateOne({ number }, { $set: { ...fields } })
+  await context.app.mongo.db.collection('incItems').updateOne({ number }, { $set: { ...fields } })
 
-  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.modify" action to look at the payload
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.modify" action to look at the payload
 
   // update the activity log
-  await context.app.mongo.db.collection('csActivityLog').insertOne({
+  await context.app.mongo.db.collection('incActivityLog').insertOne({
     date: currentDateTime,
     fields,
     previousFields,
@@ -74,7 +77,7 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
     user
   })
 
-  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.activityLog" action to look at the payload
 
   return true
 }

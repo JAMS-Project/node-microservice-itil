@@ -1,4 +1,5 @@
-import { GlobalChannel, CSOnHoldReason, GlobalPriority, CSState, GlobalImpact, GlobalUrgency } from './enum.js'
+import {GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState, GlobalImpact, GlobalUrgency, INCState} from './enum.js'
+import {IINCModify} from "./types.js";
 
 export interface IMiscResult<T> {
   // setting name
@@ -45,7 +46,7 @@ export interface ICSModifyFieldInput {
   // state
   state: CSState
   // on hold reason
-  holdReason: CSOnHoldReason
+  holdReason: GlobalOnHoldReason
   // channel
   channel: GlobalChannel
   // ID of the user
@@ -100,9 +101,9 @@ export interface IINCRequiredFieldInput {
 
 export interface IINCOptionalFieldInput {
   // state
-  state?: number
+  state: INCState
   // on hold reason
-  holdReason?: number
+  holdReason: GlobalOnHoldReason
   // channel
   channel: number
   // escalated or not
@@ -139,9 +140,14 @@ export interface IINCFields {
 }
 
 export interface IINCModifyFields {
+  // ID of the user
+  user: string
+  // number of the incident
   number: string
-  required: IINCRequiredFieldInput
-  optional?: IINCOptionalFieldInput
+  // field we are modifying
+  field: string[]
+  // the input
+  input: IINCModify
 }
 
 export interface ICreateNote {

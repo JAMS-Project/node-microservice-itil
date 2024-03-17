@@ -22,7 +22,7 @@ export enum CSState {
   CLOSED
 }
 
-export enum CSOnHoldReason {
+export enum GlobalOnHoldReason {
   UNSET,
   INFO,
   VENDOR,

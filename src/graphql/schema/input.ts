@@ -29,8 +29,8 @@ const schemaInput = gql`
     
     input INCOptionalFields {
       state: Int
-      holdReason: Int
-      channel: Int
+      holdReason: INCOnHoldReason
+      channel: GlobalChannel
       escalated: Boolean
       asset: String
       category: String
@@ -54,9 +54,8 @@ const schemaInput = gql`
       urgency: GlobalUrgency
       shortDescription: String
       description: String
-      state: Int
-      holdReason: Int
-      channel: Int
+      state: INCState
+      holdReason: INCOnHoldReason
       escalated: Boolean
       asset: String
       category: String

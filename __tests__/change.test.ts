@@ -1,13 +1,8 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {CSOnHoldReason, CSState} from "../src/declaration/enum";
-import {zeroPad} from "../src/helpers/utils";
-import graphqlMutation from "./__fixtures__/graphqlMutation";
-import graphqlQuery from "./__fixtures__/graphqlQuery";
 
 let server: FastifyInstance
-let csTestCaseNumber: string = `CS0000001`
 
 beforeAll(async () => {
   server = await buildApp(fastify())

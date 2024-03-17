@@ -1,7 +1,7 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {CSOnHoldReason, CSState} from "../src/declaration/enum";
+import {GlobalOnHoldReason, CSState} from "../src/declaration/enum";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
@@ -194,7 +194,7 @@ describe('cs - basic tests', () => {
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
         await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.ON_HOLD)
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'holdReason', CSOnHoldReason.INFO)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'holdReason', GlobalOnHoldReason.INFO)
 
       })
 
