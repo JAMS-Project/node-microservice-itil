@@ -358,9 +358,43 @@ describe('incident - basic tests', () => {
 
       })
 
-      test.todo('state: in progress --> resolved, perm')
+      test('state: in progress --> resolved', async () => {
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { state: 'RESOLVED' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> RESOLVED :: GQL')
 
-      test.todo('state: resolved --> closed')
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.RESOLVED)
+      })
+
+      test('state: resolved --> closed', async () => {
+        const gql = graphqlMutation('incModifyField', {
+          'number': { value: incTestCaseNumber, required: true },
+          'field': { value: ['state'], type: '[String!]', required: true },
+          'user': { value: `0000001`, required: true },
+          'input': { value: { state: 'CLOSED' }, type: 'INCModifyFields', required: true },
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:UPDATE FIELD - STATE - RESOLVED --> CLOSED :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incModifyField: boolean }}>().data.incModifyField).toBe(true)
+
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.CLOSED)
+      })
 
     })
 
