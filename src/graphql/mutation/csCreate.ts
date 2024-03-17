@@ -1,4 +1,4 @@
-import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState} from '../../declaration/enum.js'
+import { GlobalChannel, CSOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
 import { ICSCreateCase } from '../../declaration/interfaces.js'
 
 export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<boolean> => {
@@ -54,7 +54,6 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
   })
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
-
 
   return true
 }

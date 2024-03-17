@@ -2,37 +2,35 @@ import {
   GlobalChannel,
   GlobalImpact,
   GlobalUrgency
-} from "../../declaration/enum.js";
-import {IINCCreate, IINCModifyFieldInput} from '../../declaration/interfaces.js'
+} from '../../declaration/enum.js'
+import { IINCFields, IINCModifyFieldInput } from '../../declaration/interfaces.js'
 
-export const incCreate = async (parent: any, args: IINCCreate, context: any): Promise<boolean> => {
-  let { required, optional: inputOptional } = args
+export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<boolean> => {
+  const { required, optional: inputOptional } = args
 
   const getDefaults = await context.app.mongo.db.collection('incDefaults').find().toArray()
-  const outputObject: { [key: string]: string | number | boolean } = {};
-  getDefaults.forEach((item: { name: string; value: string | number | boolean; }): void => {
-    outputObject[item.name] = item.value;
-  });
+  const outputObject: { [key: string]: string | number | boolean } = {}
+  getDefaults.forEach((item: { name: string, value: string | number | boolean }): void => {
+    outputObject[item.name] = item.value
+  })
 
-  let optional: IINCModifyFieldInput = {
-    asset: "",
-    assignedTo: "",
-    assignmentGroup: "",
-    category: "",
-    change: "",
-    changeCaused: "",
+  const optional: IINCModifyFieldInput = {
+    asset: '',
+    assignedTo: '',
+    assignmentGroup: '',
+    category: '',
+    change: '',
+    changeCaused: '',
     channel: 0,
     escalated: false,
     holdReason: 0,
-    offering: "",
-    problem: "",
-    service: "",
+    offering: '',
+    problem: '',
+    service: '',
     state: 0,
-    subCategory: ""
+    subCategory: ''
   }
   Object.assign(optional, outputObject, inputOptional)
-
-  console.log(optional)
 
   // first, lets check to make sure that the number isn't already used
   const result = await context.app.mongo.db.collection('incItems').countDocuments({ number: required.number })
@@ -50,7 +48,7 @@ export const incCreate = async (parent: any, args: IINCCreate, context: any): Pr
     urgency: GlobalUrgency[required.urgency]
   })
 
-  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.create" action to look at the payload
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.create" action to look at the payload
 
   context.app.log.debug(id.toString(), 'CS: MAIN ID')
 

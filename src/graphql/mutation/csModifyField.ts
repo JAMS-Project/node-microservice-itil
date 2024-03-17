@@ -1,23 +1,20 @@
-import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState} from "../../declaration/enum.js";
-import {ICSModifyField} from "../../declaration/interfaces.js";
+import { GlobalChannel, CSOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
+import { ICSModifyField } from '../../declaration/interfaces.js'
 
 export const csModifyField = async (_parent: any, args: ICSModifyField, context: any): Promise<boolean> => {
+  const { number, user, field, input } = args
 
-  const { number, user,  field, input } = args
-
-  const findCase = await context.app.mongo.db.collection('csItems').findOne({ 'number': number })
+  const findCase = await context.app.mongo.db.collection('csItems').findOne({ number })
 
   const currentDateTime = new Date()
 
   let id: string | unknown
 
-  const fields: {[field: string]: string | number | boolean} = {}
-  const previousFields: {[field: string]: string | number | boolean} = {}
+  const fields: { [field: string]: string | number | boolean } = {}
+  const previousFields: { [field: string]: string | number | boolean } = {}
 
   for (const fieldLoop of field) {
-
     if (typeof findCase !== 'undefined') {
-
       // case id
       id = findCase._id.toString()
       // stored new values
@@ -53,19 +50,17 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
 
       fields[fieldLoop] = data
       previousFields[fieldLoop] = findCase[fieldLoop]
-
     } else {
-      throw  new Error('Number case not found.')
+      throw new Error('Number case not found.')
     }
-
   }
 
   if (typeof id === 'undefined') {
-    throw  new Error('Object MongoDB ID not found.')
+    throw new Error('Object MongoDB ID not found.')
   }
 
   // update the case
-  await context.app.mongo.db.collection('csItems').updateOne( { number },{$set: {...fields }})
+  await context.app.mongo.db.collection('csItems').updateOne({ number }, { $set: { ...fields } })
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.modify" action to look at the payload
 
@@ -82,6 +77,4 @@ export const csModifyField = async (_parent: any, args: ICSModifyField, context:
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
 
   return true
-
-
 }

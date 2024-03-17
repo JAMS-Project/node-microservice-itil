@@ -151,6 +151,7 @@ const schema = gql`
       csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean!
       # INC
       incCreate(required: INCRequiredFields, optional: INCModifyFields): Boolean!
+      incCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
     }
           
     extend type Query {

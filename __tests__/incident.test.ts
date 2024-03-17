@@ -186,8 +186,6 @@ describe('incident - basic tests', () => {
 
     })
 
-
-
     test.todo('new incident to another incident as a child')
 
     describe('actions: state', () => {

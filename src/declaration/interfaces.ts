@@ -1,4 +1,4 @@
-import {GlobalChannel, CSOnHoldReason, GlobalPriority, CSState, GlobalImpact, GlobalUrgency} from './enum.js'
+import { GlobalChannel, CSOnHoldReason, GlobalPriority, CSState, GlobalImpact, GlobalUrgency } from './enum.js'
 
 export interface IMiscResult<T> {
   // setting name
@@ -39,19 +39,6 @@ export interface ICSQuery {
   shortDescription: string
   // possibility a very long description of the issue (in markdown)
   description: string
-}
-
-export interface ICSCreateNote {
-  // display case number
-  number: string
-  // display case number
-  channel: GlobalChannel
-  // display case number
-  user: string
-  // type
-  type: 'note' | 'workNote'
-  // display case number
-  note: string
 }
 
 export interface ICSModifyFieldInput {
@@ -142,7 +129,26 @@ export interface IINCModifyFieldInput {
   assignmentGroup?: string
 }
 
-export interface IINCCreate {
+export interface IINCFields {
   required: IINCCreateRequired
   optional?: IINCModifyFieldInput
+}
+
+export interface IINCModifyFields {
+  number: string
+  required: IINCCreateRequired
+  optional?: IINCModifyFieldInput
+}
+
+export interface ICreateNote {
+  // display case number
+  number: string
+  // display case number
+  channel: GlobalChannel
+  // display case number
+  user: string
+  // type
+  type: 'note' | 'workNote'
+  // display case number
+  note: string
 }
