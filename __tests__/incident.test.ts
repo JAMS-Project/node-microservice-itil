@@ -61,8 +61,6 @@ describe('incident - basic tests', () => {
 
     test('create', async() => {
 
-      // total length of numbers
-      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
       // get number
       let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
       // increase count by one
@@ -94,6 +92,35 @@ describe('incident - basic tests', () => {
       expect(result.json<{ data: { incCreate: boolean }}>().data.incCreate).toBe(true)
 
       await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
+
+    })
+
+    test('new incident to another incident as a child', async () => {
+
+      // get number
+      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
+      // increase count by one
+      currentNumber++
+      // update the database
+      await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
+
+      const gql = graphqlMutation('incCreate', {
+        'required': {
+          value: {
+            number: 'INC0000002',
+            channel: 'SELF_SERVE',
+            category: 'Hardware',
+            user: '0000001',
+            impact: 'LOW',
+            urgency: 'LOW',
+            shortDescription: 'Hello, World!',
+            description: 'Foo Bar'
+          },
+          type: 'INCRequiredFields',
+          required: true
+        }
+      })
+      server.log.debug(gql, 'INC:UNIT TEST:CREATE AS CHILD :: GQL')
 
     })
 
@@ -168,7 +195,21 @@ describe('incident - basic tests', () => {
 
     describe('actions: copy', () => {
 
-      test.todo('... to a new incident')
+      test('... to a new incident', async () => {
+        // get the fields needed to send back to the client to create a duplicate
+        const gql = graphqlQuery('incCopy', ['number'], {
+          'number': { value: incTestCaseNumber, required: true }
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:QUERY SINGLE :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incCopy: { number: string } }}>().data.incCopy.number).toBe(incTestCaseNumber)
+
+      })
 
     })
 
@@ -185,8 +226,6 @@ describe('incident - basic tests', () => {
       test.todo('... task')
 
     })
-
-    test.todo('new incident to another incident as a child')
 
     describe('actions: state', () => {
 
