@@ -118,9 +118,24 @@ describe('incident - basic tests', () => {
           },
           type: 'INCRequiredFields',
           required: true
+        },
+        'optional': {
+          value: {
+            parent: 'INC0000001'
+          },
+          type: 'INCModifyFields'
         }
       })
       server.log.debug(gql, 'INC:UNIT TEST:CREATE AS CHILD :: GQL')
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ data: { incCreate: boolean }}>().data.incCreate).toBe(true)
+
+      await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
 
     })
 

@@ -8,6 +8,12 @@ import { IINCFields, IINCModifyFieldInput } from '../../declaration/interfaces.j
 export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<boolean> => {
   const { required, optional: inputOptional } = args
 
+  // first, lets check to make sure that the number isn't already used
+  const result = await context.app.mongo.db.collection('incItems').countDocuments({ number: required.number })
+  if (result > 0) {
+    throw new Error('Number already being used. Unable to submit.')
+  }
+
   const getDefaults = await context.app.mongo.db.collection('incDefaults').find().toArray()
   const outputObject: { [key: string]: string | number | boolean } = {}
   getDefaults.forEach((item: { name: string, value: string | number | boolean }): void => {
@@ -28,15 +34,11 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     problem: '',
     service: '',
     state: 0,
-    subCategory: ''
+    subCategory: '',
+    parent: '',
+    child: []
   }
   Object.assign(optional, outputObject, inputOptional)
-
-  // first, lets check to make sure that the number isn't already used
-  const result = await context.app.mongo.db.collection('incItems').countDocuments({ number: required.number })
-  if (result > 0) {
-    throw new Error('Number already being used. Unable to submit.')
-  }
 
   const currentDateTime = new Date()
 
@@ -47,6 +49,11 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     impact: GlobalImpact[required.impact],
     urgency: GlobalUrgency[required.urgency]
   })
+
+  if (optional.parent) {
+    await context.app.mongo.db.collection('incItems').updateOne( { number: optional.parent}, { "$push": { child: required.number }})
+    // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.new_child" action to look at the payload
+  }
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.create" action to look at the payload
 

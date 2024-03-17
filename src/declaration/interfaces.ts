@@ -127,6 +127,10 @@ export interface IINCModifyFieldInput {
   assignedTo?: string
   // assignment group
   assignmentGroup?: string
+  // child
+  child?: string[]
+  // parent
+  parent?: string
 }
 
 export interface IINCFields {
