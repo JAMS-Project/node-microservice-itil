@@ -16,7 +16,14 @@ const schema = gql`
       CRITICAL
     }
     
-    enum INCPriority {
+    enum GlobalImpact {
+      LOW,
+      MODERATE,
+      HIGH,
+      CRITICAL
+    }
+    
+    enum GlobalUrgency {
       LOW,
       MODERATE,
       HIGH,
@@ -64,7 +71,7 @@ const schema = gql`
       resolveNotes: String
       resolvedBy: String
     }
-    
+   
     input CSModifyFields {
       state: CSState
       holdReason: CSOnHoldReason
@@ -85,8 +92,8 @@ const schema = gql`
       channel: GlobalChannel!
       user: String!
       category: String!
-      impact: Int!
-      urgency: Int!
+      impact: GlobalImpact!
+      urgency: GlobalUrgency!
       shortDescription: String!
       description: String!
     }
@@ -95,7 +102,6 @@ const schema = gql`
       state: Int
       holdReason: Int
       channel: Int
-      user: String
       escalated: Boolean
       asset: String
       category: String
@@ -107,8 +113,35 @@ const schema = gql`
       offering: String
       assignedTo: String
       assignmentGroup: String 
-      incParent: String
-      incChild: [String!]
+      parent: String
+      child: [String!]
+    }
+    
+    type incQuery {
+      number: String!
+      channel: GlobalChannel!
+      user: String!
+      category: String!
+      impact: GlobalImpact!
+      urgency: GlobalUrgency!
+      shortDescription: String!
+      description: String!
+      state: Int!
+      holdReason: Int
+      channel: Int!
+      escalated: Boolean!
+      asset: String
+      category: String!
+      subCategory: String
+      problem: String
+      change: String
+      changeCaused: String
+      service: String
+      offering: String
+      assignedTo: String
+      assignmentGroup: String
+      parent: String
+      child: [String!]
     }
  
     extend type Mutation {
@@ -122,6 +155,7 @@ const schema = gql`
           
     extend type Query {
       csQuery(number: String): [csQuery!]!
+      incQuery(number: String): [incQuery!]!
     }
 `
 

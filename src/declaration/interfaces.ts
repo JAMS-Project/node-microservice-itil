@@ -104,7 +104,7 @@ export interface IINCCreateRequired {
   // urgency
   urgency: GlobalUrgency
   // who is submitting this issue
-  contact: string
+  user: string
   // what's this about in a short description?
   shortDescription: string
   // possibility a very long description of the issue (in markdown)
@@ -118,8 +118,6 @@ export interface IINCModifyFieldInput {
   holdReason?: number
   // channel
   channel: number
-  // ID of the user
-  user?: string
   // escalated or not
   escalated: boolean
   // asset assigned to case

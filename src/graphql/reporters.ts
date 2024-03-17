@@ -3,6 +3,7 @@ import { csCreateNote } from './mutation/csCreateNote.js'
 import {csModifyField} from "./mutation/csModifyField.js";
 import {incCreate} from "./mutation/incCreate.js";
 import { csQuery } from './query/csQuery.js'
+import {incQuery} from "./query/incQuery.js";
 
 const Mutation = {
   csCreate,
@@ -12,7 +13,8 @@ const Mutation = {
 }
 
 const Query = {
-  csQuery
+  csQuery,
+  incQuery
 }
 
 const Types = {}

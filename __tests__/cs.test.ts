@@ -82,7 +82,7 @@ describe('cs - basic tests', () => {
       })
       expect(result.json<{ data: { csCreate: boolean }}>().data.csCreate).toBe(true)
 
-      await checkCase(server,csTestCaseNumber, 'state', CSState.NEW)
+      await checkCase(server,'csQuery',csTestCaseNumber, 'state', CSState.NEW)
 
     })
 
@@ -173,7 +173,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.IN_PROGRESS)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 
       })
 
@@ -193,8 +193,8 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.ON_HOLD)
-        await checkCase(server, csTestCaseNumber, 'holdReason', CSOnHoldReason.INFO)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.ON_HOLD)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'holdReason', CSOnHoldReason.INFO)
 
       })
 
@@ -220,7 +220,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.IN_PROGRESS)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 
       })
 
@@ -240,7 +240,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
 
       })
 
@@ -260,7 +260,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.SOLUTION_REJECTED)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.SOLUTION_REJECTED)
 
       })
 
@@ -280,7 +280,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.IN_PROGRESS)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.IN_PROGRESS)
 
       })
 
@@ -300,7 +300,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
 
       })
 
@@ -320,7 +320,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.RESOLVED)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.RESOLVED)
 
       })
 
@@ -340,7 +340,7 @@ describe('cs - basic tests', () => {
         })
         expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
 
-        await checkCase(server, csTestCaseNumber, 'state', CSState.CLOSED)
+        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.CLOSED)
 
       })
 

@@ -1,10 +1,11 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {INCState} from "../src/declaration/enum";
+import {GlobalChannel, INCState} from "../src/declaration/enum";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
+
 
 let server: FastifyInstance
 let incTestCaseNumber: string = `INC0000001`
@@ -16,10 +17,18 @@ beforeAll(async () => {
   await server.mongo.db.collection('incItems').deleteMany()
   await server.mongo.db.collection('incActivityLog').deleteMany()
   await server.mongo.db.collection('incNotes').deleteMany()
+  await server.mongo.db.collection('incDefaults').deleteMany()
+
 
   await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberInc/ } } )
   await server.mongo.db.collection('misc').insertOne({name: 'numberIncLen', value: 7, system: true})
   await server.mongo.db.collection('misc').insertOne({name: 'numberInc', value: 0, system: true})
+
+  await server.mongo.db.collection('incDefaults').insertOne({name: 'state', value: INCState.NEW, system: true})
+  await server.mongo.db.collection('incDefaults').insertOne({name: 'escalated', value: false, system: true})
+  await server.mongo.db.collection('incDefaults').insertOne({name: 'category', value: 'Hardware', system: true})
+  await server.mongo.db.collection('incDefaults').insertOne({name: 'channel', value: GlobalChannel.WEB, system: true})
+
 })
 
 afterAll(async () => {
@@ -62,19 +71,20 @@ describe('incident - basic tests', () => {
       await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
 
       const gql = graphqlMutation('incCreate', {
-        'number': { value: incTestCaseNumber, required: true },
-        'channel': {
-          value: 'SELF_SERVE',
-          type: "GlobalChannel", required: true },
-        'user': { value: '00000001', required: true },
-        'priority': {
-          value: 'LOW',
-          type: "INCPriority", required: true },
-        'asset': { value: '00000001' },
-        'shortDescription': { value: 'Hello, World!', required: true },
-        'description': { value: 'Foo Bar', required: true },
+        'required': { value: {
+          number: 'INC0000001',
+            channel: 'SELF_SERVE',
+            category: 'Hardware',
+            user: '0000001',
+            impact: 'LOW',
+            urgency: 'LOW',
+            shortDescription: 'Hello, World!',
+            description: 'Foo Bar'},
+          type: 'INCRequiredFields',
+          required: true
+        }
       })
-      server.log.debug(gql, 'CS:UNIT TEST:CREATE :: GQL')
+      server.log.debug(gql, 'INC:UNIT TEST:CREATE :: GQL')
 
       const result = await server.inject({
         method: "POST",
@@ -83,14 +93,14 @@ describe('incident - basic tests', () => {
       })
       expect(result.json<{ data: { incCreate: boolean }}>().data.incCreate).toBe(true)
 
-      await checkCase(server, incTestCaseNumber, 'state', INCState.NEW)
+      await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
 
     })
 
     test('query - all', async () => {
 
       const gql = graphqlQuery('incQuery', ['number'])
-      server.log.debug(gql, 'CS:UNIT TEST:QUERY :: GQL')
+      server.log.debug(gql, 'INC:UNIT TEST:QUERY :: GQL')
 
       const result = await server.inject({
         method: "POST",
@@ -106,7 +116,7 @@ describe('incident - basic tests', () => {
       const gql = graphqlQuery('incQuery', ['number'], {
         'number': { value: incTestCaseNumber }
       })
-      server.log.debug(gql, 'CS:UNIT TEST:QUERY SINGLE :: GQL')
+      server.log.debug(gql, 'INC:UNIT TEST:QUERY SINGLE :: GQL')
 
       const result = await server.inject({
         method: "POST",
@@ -127,7 +137,7 @@ describe('incident - basic tests', () => {
         'type': { value: 'note', required: true },
         'note': { value: 'New Note', required: true }
       })
-      server.log.debug(gql, 'CS:UNIT TEST:CREATE NOTE :: GQL')
+      server.log.debug(gql, 'INC:UNIT TEST:CREATE NOTE :: GQL')
 
       const result = await server.inject({
         method: "POST",
@@ -146,7 +156,7 @@ describe('incident - basic tests', () => {
         'type': { value: 'workNote', required: true },
         'note': { value: 'New Work Note', required: true }
       })
-      server.log.debug(gql, 'CS:UNIT TEST:CREATE WORK NOTE :: GQL')
+      server.log.debug(gql, 'INC:UNIT TEST:CREATE WORK NOTE :: GQL')
 
       const result = await server.inject({
         method: "POST",
