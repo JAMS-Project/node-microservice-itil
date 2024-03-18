@@ -1,6 +1,11 @@
 import { gql } from 'mercurius-codegen'
 
 const schemaType = gql`
+    type createResult {
+      number: String
+      result: Boolean!
+    }
+
     type csQuery { 
       id: ID!
       number: String!

@@ -53,7 +53,7 @@ describe('cs - basic tests', () => {
     test('create', async() => {
 
       // total length of numbers
-      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberCsLen' })
+      // const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberCsLen' })
       // get number
       let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberCs' })
       // increase count by one
@@ -61,7 +61,7 @@ describe('cs - basic tests', () => {
       // update the database
       await server.mongo.db.collection('misc').updateOne({ name: 'numberCs' }, { $set: { value: currentNumber } })
 
-      const gql = graphqlMutation('csCreate', {
+      const gql = graphqlMutation('csCreate',  ['number','result'],{
           'number': { value: csTestCaseNumber, required: true },
           'channel': {
             value: 'SELF_SERVE',
@@ -80,7 +80,7 @@ describe('cs - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { csCreate: boolean }}>().data.csCreate).toBe(true)
+      expect(result.json<{ data: { csCreate: { result: boolean } }}>().data.csCreate.result).toBe(true)
 
       await checkCase(server,'csQuery',csTestCaseNumber, 'state', CSState.NEW)
 
@@ -119,7 +119,7 @@ describe('cs - basic tests', () => {
 
     test('add note', async () => {
 
-      const gql = graphqlMutation('csCreateNote', {
+      const gql = graphqlMutation('csCreateNote',  [],{
         'number': { value: csTestCaseNumber, required: true },
         'channel': { value: 'WEB', type: "GlobalChannel", required: true },
         'user': { value: `0000001`, required: true },
@@ -138,7 +138,7 @@ describe('cs - basic tests', () => {
     })
 
     test('add work node', async () => {
-      const gql = graphqlMutation('csCreateNote', {
+      const gql = graphqlMutation('csCreateNote', [],{
         'number': { value: csTestCaseNumber, required: true },
         'channel': { value: 'WEB', type: "GlobalChannel", required: true },
         'user': { value: `0000001`, required: true },
@@ -158,7 +158,7 @@ describe('cs - basic tests', () => {
     describe('actions: state', () => {
 
       test('state: new --> in progress', async() => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [],{
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -178,7 +178,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: in progress --> on hold, awaiting caller', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [],{
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -205,7 +205,7 @@ describe('cs - basic tests', () => {
         // This would come in the form
         // of a rabbitmq listing to itil.cs.note listener
 
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [],{
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -225,7 +225,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: in progress --> proposed solution', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [], {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -245,7 +245,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: proposed solution --> rejected solution', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [], {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -265,7 +265,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: rejected solution --> in progress', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [], {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -285,7 +285,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: in progress --> proposed solution', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [], {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -305,7 +305,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: proposed solution --> resolved', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [], {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -325,7 +325,7 @@ describe('cs - basic tests', () => {
       })
 
       test('state: resolved --> closed', async () => {
-        const gql = graphqlMutation('csModifyField', {
+        const gql = graphqlMutation('csModifyField', [], {
           'number': { value: csTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },

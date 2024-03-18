@@ -67,7 +67,7 @@ describe('incident - basic tests', () => {
       // update the database
       await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
 
-      const gql = graphqlMutation('incCreate', {
+      const gql = graphqlMutation('incCreate',  ['number', 'result'],{
         'required': { value: {
           number: 'INC0000001',
             channel: 'SELF_SERVE',
@@ -88,7 +88,7 @@ describe('incident - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { incCreate: boolean }}>().data.incCreate).toBe(true)
+      expect(result.json<{ data: { incCreate: { result: boolean } }}>().data.incCreate.result).toBe(true)
 
       await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
 
@@ -103,7 +103,7 @@ describe('incident - basic tests', () => {
       // update the database
       await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
 
-      const gql = graphqlMutation('incCreate', {
+      const gql = graphqlMutation('incCreate', ['number', 'result'],{
         'required': {
           value: {
             number: 'INC0000002',
@@ -132,7 +132,7 @@ describe('incident - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { incCreate: boolean }}>().data.incCreate).toBe(true)
+      expect(result.json<{ data: { incCreate: { result: boolean} }}>().data.incCreate.result).toBe(true)
 
       await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
 
@@ -171,7 +171,7 @@ describe('incident - basic tests', () => {
 
     test('add note', async () => {
 
-      const gql = graphqlMutation('incCreateNote', {
+      const gql = graphqlMutation('incCreateNote', [],{
         'number': { value: incTestCaseNumber, required: true },
         'channel': { value: 'WEB', type: "GlobalChannel", required: true },
         'user': { value: `0000001`, required: true },
@@ -190,7 +190,7 @@ describe('incident - basic tests', () => {
     })
 
     test('add work node', async () => {
-      const gql = graphqlMutation('incCreateNote', {
+      const gql = graphqlMutation('incCreateNote', [],{
         'number': { value: incTestCaseNumber, required: true },
         'channel': { value: 'WEB', type: "GlobalChannel", required: true },
         'user': { value: `0000001`, required: true },
@@ -231,7 +231,7 @@ describe('incident - basic tests', () => {
 
       test('state: new --> in progress', async () => {
 
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -252,7 +252,7 @@ describe('incident - basic tests', () => {
 
       test('state: in progress --> on hold, awaiting caller', async() => {
 
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['state','holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -273,7 +273,7 @@ describe('incident - basic tests', () => {
       })
 
       test('state: in progress --> on hold, awaiting vendor', async () => {
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -293,7 +293,7 @@ describe('incident - basic tests', () => {
       })
 
       test('state: in progress --> on hold, awaiting re-assignment', async() => {
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -313,7 +313,7 @@ describe('incident - basic tests', () => {
       })
 
       test('state: in progress --> on hold, awaiting scheduling', async() => {
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -339,7 +339,7 @@ describe('incident - basic tests', () => {
         // This would come in the form
         // of a rabbitmq listing to itil.inc.note listener
 
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -359,7 +359,7 @@ describe('incident - basic tests', () => {
       })
 
       test('state: in progress --> resolved', async () => {
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },
@@ -378,7 +378,7 @@ describe('incident - basic tests', () => {
       })
 
       test('state: resolved --> closed', async () => {
-        const gql = graphqlMutation('incModifyField', {
+        const gql = graphqlMutation('incModifyField', [],{
           'number': { value: incTestCaseNumber, required: true },
           'field': { value: ['state'], type: '[String!]', required: true },
           'user': { value: `0000001`, required: true },

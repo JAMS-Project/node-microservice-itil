@@ -5,7 +5,7 @@ import {
 } from '../../declaration/enum.js'
 import { IINCFields, IINCOptionalFieldInput } from '../../declaration/interfaces.js'
 
-export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<boolean> => {
+export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<{ number?: string, result: boolean}> => {
   const { required, optional: inputOptional } = args
 
   // first, lets check to make sure that the number isn't already used
@@ -80,5 +80,5 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     system: true
   })
 
-  return true
+  return { number: required.number, result: true}
 }

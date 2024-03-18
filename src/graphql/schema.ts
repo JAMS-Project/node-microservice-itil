@@ -6,11 +6,11 @@ import schemaType from "./schema/type.js";
 const schema = schemaEnum + schemaInput + schemaType + gql`    
     extend type Mutation {
       # CS
-      csCreate(number: String!, channel: GlobalChannel!, user: String!, priority: CSPriority, shortDescription: String!, description: String!, optional: CSModifyFields): Boolean!
+      csCreate(number: String!, channel: GlobalChannel!, user: String!, priority: CSPriority, shortDescription: String!, description: String!, optional: CSModifyFields): createResult!
       csCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
       csModifyField(number: String!, user: String!, field: [String!]!, input: CSModifyFields!): Boolean!
       # INC
-      incCreate(required: INCRequiredFields, optional: INCOptionalFields): Boolean!
+      incCreate(required: INCRequiredFields, optional: INCOptionalFields): createResult!
       incCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
       incModifyField(number: String!, user: String!, field: [String!]!, input: INCModifyFields!): Boolean!
     }
