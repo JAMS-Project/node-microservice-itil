@@ -35,6 +35,8 @@ const schemaType = gql`
       category: String!
       impact: Int!
       urgency: Int!
+      # This will be required in the future.
+      priority: Int
       shortDescription: String!
       description: String!
       state: Int!
@@ -64,6 +66,34 @@ const schemaType = gql`
       urgency: Int!
       shortDescription: String!
       description: String!
+    }
+    
+    type prbQuery {
+      # Required
+      number: String!
+      user: String!
+      category: String!
+      channel: Int!
+      impact: Int!
+      urgency: Int!
+      # This will be required in the future.
+      priority: Int
+      statement: String!
+      description: String!
+      initialReport: String
+      state: Int
+      escalated: Boolean
+      asset: [String!]
+      change: [String!]
+      incident: [String!]
+      service: String
+      offering: String
+      assignedTo: String
+      assignmentGroup: String 
+      # Tasks will be items that needed to be done for compiling this problem.
+      tasks: [String]
+      # KB Articles
+      kb: [String!]
     }
 `
 

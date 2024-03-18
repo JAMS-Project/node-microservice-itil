@@ -7,6 +7,12 @@ const schemaEnum = gql`
       PHONE,
       AI
     }
+    
+    enum PRBChannel {
+      MANUAL,
+      AUTO,
+      AI
+    }
 
     enum CSPriority {
       LOW,
@@ -47,6 +53,15 @@ const schemaEnum = gql`
       PENDING_SCHEDULED,
       SCHEDULED,
       DEPENDENCY
+    }
+
+    enum PRBState {
+      NEW,
+      ASSESS,
+      RCA,
+      FIX_IN_PROGRESS,
+      RESOLVED,
+      CLOSED
     }
     
     enum INCState {

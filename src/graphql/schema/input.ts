@@ -71,7 +71,56 @@ const schemaInput = gql`
       child: [String!]
     }
     
+    input PRBRequiredFields {
+      number: String!
+      user: String!
+      category: String!
+      channel: PRBChannel!
+      impact: GlobalImpact!
+      urgency: GlobalUrgency!
+      statement: String!
+      description: String!
+    }
     
+    input PRBOptionalFields {
+      initialReport: String
+      state: Int
+      escalated: Boolean
+      asset: [String!]
+      change: [String!]
+      incident: [String!]
+      service: String
+      offering: String
+      assignedTo: String
+      assignmentGroup: String 
+      # Tasks will be items that needed to be done for compiling this problem.
+      tasks: [String]
+      # KB Articles
+      kb: [String!]
+    }
+    
+    input PRBModifyFields {
+      category: String
+      channel: PRBChannel
+      impact: GlobalImpact
+      urgency: GlobalUrgency
+      statement: String
+      description: String
+      initialReport: String
+      state: Int
+      escalated: Boolean
+      asset: [String!]
+      change: [String!]
+      incident: [String!]
+      service: String
+      offering: String
+      assignedTo: String
+      assignmentGroup: String 
+      # Tasks will be items that needed to be done for compiling this problem.
+      tasks: [String]
+      # KB Articles
+      kb: [String!]
+    }
     
 `
 
