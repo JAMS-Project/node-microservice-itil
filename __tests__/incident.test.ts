@@ -2,13 +2,14 @@ import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
 import {CSState, GlobalChannel, GlobalOnHoldReason, INCState} from "../src/declaration/enum";
+import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
 
 
 let server: FastifyInstance
-let incTestCaseNumber: string = `INC0000001`
+let incTestCaseNumber: string
 
 beforeAll(async () => {
   server = await buildApp(fastify())
@@ -60,16 +61,20 @@ describe('incident - basic tests', () => {
 
     test('create', async() => {
 
+      // total length of numbers
+      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
       // get number
       let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
       // increase count by one
       currentNumber++
       // update the database
       await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
+      // cs number
+      const incNUmber = zeroPad(currentNumber, valueLen)
 
       const gql = graphqlMutation('incCreate',  ['number', 'result'],{
         'required': { value: {
-          number: 'INC0000001',
+          number: `INC${incNUmber}`,
             channel: 'SELF_SERVE',
             category: 'Hardware',
             user: '0000001',
@@ -89,52 +94,66 @@ describe('incident - basic tests', () => {
         path: "/graphql"
       })
       expect(result.json<{ data: { incCreate: { result: boolean } }}>().data.incCreate.result).toBe(true)
+      expect(result.json<{ data: { incCreate: { number: string } }}>().data.incCreate.number).toBe('INC0000001')
+
+      incTestCaseNumber = result.json<{ data: { incCreate: { number: string } }}>().data.incCreate.number
 
       await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
 
     })
 
-    test('create incident to another incident as a child', async () => {
+    describe('create, attached to another...', () => {
 
-      // get number
-      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
-      // increase count by one
-      currentNumber++
-      // update the database
-      await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
+      test('... incident as a child', async () => {
 
-      const gql = graphqlMutation('incCreate', ['number', 'result'],{
-        'required': {
-          value: {
-            number: 'INC0000002',
-            channel: 'SELF_SERVE',
-            category: 'Hardware',
-            user: '0000001',
-            impact: 'LOW',
-            urgency: 'LOW',
-            shortDescription: 'Hello, World!',
-            description: 'Foo Bar'
+        // total length of numbers
+        const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
+        // get number
+        let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
+        // increase count by one
+        currentNumber++
+        // update the database
+        await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
+        // cs number
+        const incNUmber = zeroPad(currentNumber, valueLen)
+
+        const gql = graphqlMutation('incCreate', ['number', 'result'],{
+          'required': {
+            value: {
+              number: `INC${incNUmber}`,
+              channel: 'SELF_SERVE',
+              category: 'Hardware',
+              user: '0000001',
+              impact: 'LOW',
+              urgency: 'LOW',
+              shortDescription: 'Hello, World!',
+              description: 'Foo Bar'
+            },
+            type: 'INCRequiredFields',
+            required: true
           },
-          type: 'INCRequiredFields',
-          required: true
-        },
-        'optional': {
-          value: {
-            parent: 'INC0000001'
-          },
-          type: 'INCOptionalFields'
-        }
-      })
-      server.log.debug(gql, 'INC:UNIT TEST:CREATE AS CHILD :: GQL')
+          'optional': {
+            value: {
+              parent: incTestCaseNumber
+            },
+            type: 'INCOptionalFields'
+          }
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:CREATE AS CHILD :: GQL')
 
-      const result = await server.inject({
-        method: "POST",
-        body: gql,
-        path: "/graphql"
-      })
-      expect(result.json<{ data: { incCreate: { result: boolean} }}>().data.incCreate.result).toBe(true)
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incCreate: { result: boolean} }}>().data.incCreate.result).toBe(true)
+        expect(result.json<{ data: { incCreate: { number: string} }}>().data.incCreate.number).toBe('INC0000002')
 
-      await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
+        await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
+
+      })
+
+      test.todo('... to a case')
 
     })
 

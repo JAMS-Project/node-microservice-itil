@@ -2,12 +2,13 @@ import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
 import {GlobalOnHoldReason, CSState} from "../src/declaration/enum";
+import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
 
 let server: FastifyInstance
-let csTestCaseNumber: string = `CS0000001`
+let csTestCaseNumber: string
 
 beforeAll(async () => {
   server = await buildApp(fastify())
@@ -53,16 +54,18 @@ describe('cs - basic tests', () => {
     test('create', async() => {
 
       // total length of numbers
-      // const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberCsLen' })
+      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberCsLen' })
       // get number
       let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberCs' })
       // increase count by one
       currentNumber++
       // update the database
       await server.mongo.db.collection('misc').updateOne({ name: 'numberCs' }, { $set: { value: currentNumber } })
+      // cs number
+      const csNUmber = zeroPad(currentNumber, valueLen)
 
       const gql = graphqlMutation('csCreate',  ['number','result'],{
-          'number': { value: csTestCaseNumber, required: true },
+          'number': { value: `CS${csNUmber}`, required: true },
           'channel': {
             value: 'SELF_SERVE',
             type: "GlobalChannel", required: true },
@@ -81,6 +84,9 @@ describe('cs - basic tests', () => {
         path: "/graphql"
       })
       expect(result.json<{ data: { csCreate: { result: boolean } }}>().data.csCreate.result).toBe(true)
+      expect(result.json<{ data: { csCreate: { number: string } }}>().data.csCreate.number).toBe('CS0000001')
+
+      csTestCaseNumber = result.json<{ data: { csCreate: { number: string } }}>().data.csCreate.number
 
       await checkCase(server,'csQuery',csTestCaseNumber, 'state', CSState.NEW)
 
