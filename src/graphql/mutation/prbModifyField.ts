@@ -4,8 +4,8 @@ import {
   GlobalOnHoldReason,
   GlobalUrgency,
   PRBState
-} from "../../declaration/enum.js";
-import {IINCModifyFields} from "../../declaration/interfaces.js";
+} from '../../declaration/enum.js'
+import { IINCModifyFields } from '../../declaration/interfaces.js'
 
 export const prbModifyField = async (_parent: any, args: IINCModifyFields, context: any): Promise<boolean> => {
   const { number, user, field, input } = args

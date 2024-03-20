@@ -1,7 +1,7 @@
-import {GlobalChannel, GlobalImpact, GlobalUrgency, PRBChannel, PRBState } from '../../declaration/enum.js'
-import {IPRBFields, IPRBOptionalFieldInput} from "../../declaration/interfaces";
+import { GlobalChannel, GlobalImpact, GlobalUrgency, PRBChannel, PRBState } from '../../declaration/enum.js'
+import { IPRBFields, IPRBOptionalFieldInput } from '../../declaration/interfaces'
 
-export const prbCreate = async (parent: any, args: IPRBFields, context: any): Promise<{ number?: string, result: boolean}> => {
+export const prbCreate = async (parent: any, args: IPRBFields, context: any): Promise<{ number?: string, result: boolean }> => {
   const { required, optional: inputOptional } = args
 
   // first, lets check to make sure that the number isn't already used
@@ -18,15 +18,15 @@ export const prbCreate = async (parent: any, args: IPRBFields, context: any): Pr
 
   const optional: IPRBOptionalFieldInput = {
     asset: [],
-    assignedTo: "",
-    assignmentGroup: "",
+    assignedTo: '',
+    assignmentGroup: '',
     change: [],
     escalated: false,
     incident: [],
-    initialReport: "",
+    initialReport: '',
     kb: [],
-    offering: "",
-    service: "",
+    offering: '',
+    service: '',
     state: 0,
     tasks: []
   }
@@ -62,5 +62,5 @@ export const prbCreate = async (parent: any, args: IPRBFields, context: any): Pr
     system: false
   })
 
-  return { number: required.number, result: true}
+  return { number: required.number, result: true }
 }

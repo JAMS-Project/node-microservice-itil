@@ -1,7 +1,7 @@
 import { GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
 import { ICSCreateCase } from '../../declaration/interfaces.js'
 
-export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<{ number?: string, result: boolean}> => {
+export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<{ number?: string, result: boolean }> => {
   const { number, channel, contact, priority, asset, shortDescription, description } = args
 
   // first, lets check to make sure that the number isn't already used
@@ -55,5 +55,5 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
 
-  return { number, result: true}
+  return { number, result: true }
 }

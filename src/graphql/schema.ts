@@ -1,7 +1,7 @@
 import { gql } from 'mercurius-codegen'
-import schemaEnum from "./schema/enum.js";
-import schemaInput from "./schema/input.js";
-import schemaType from "./schema/type.js";
+import schemaEnum from './schema/enum.js'
+import schemaInput from './schema/input.js'
+import schemaType from './schema/type.js'
 
 const schema = schemaEnum + schemaInput + schemaType + gql`    
     extend type Mutation {

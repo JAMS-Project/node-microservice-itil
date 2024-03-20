@@ -1,5 +1,5 @@
-import {GlobalChannel, GlobalImpact, GlobalOnHoldReason, GlobalUrgency, INCState} from "../../declaration/enum.js";
-import {IINCModifyFields} from "../../declaration/interfaces.js";
+import { GlobalChannel, GlobalImpact, GlobalOnHoldReason, GlobalUrgency, INCState } from '../../declaration/enum.js'
+import { IINCModifyFields } from '../../declaration/interfaces.js'
 
 export const incModifyField = async (_parent: any, args: IINCModifyFields, context: any): Promise<boolean> => {
   const { number, user, field, input } = args

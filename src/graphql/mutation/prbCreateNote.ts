@@ -1,4 +1,4 @@
-import {PRBChannel} from '../../declaration/enum.js'
+import { PRBChannel } from '../../declaration/enum.js'
 import { ICreateNote } from '../../declaration/interfaces.js'
 
 export const prbCreateNote = async (parent: any, args: ICreateNote, context: any): Promise<boolean> => {

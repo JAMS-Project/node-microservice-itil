@@ -5,7 +5,7 @@ import {
 } from '../../declaration/enum.js'
 import { IINCFields, IINCOptionalFieldInput } from '../../declaration/interfaces.js'
 
-export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<{ number?: string, result: boolean}> => {
+export const incCreate = async (parent: any, args: IINCFields, context: any): Promise<{ number?: string, result: boolean }> => {
   const { required, optional: inputOptional } = args
 
   // first, lets check to make sure that the number isn't already used
@@ -50,8 +50,8 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     urgency: GlobalUrgency[required.urgency]
   })
 
-  if (optional.parent) {
-    await context.app.mongo.db.collection('incItems').updateOne( { number: optional.parent}, { "$push": { child: required.number }})
+  if (typeof optional.parent !== 'undefined' && optional.parent !== '') {
+    await context.app.mongo.db.collection('incItems').updateOne({ number: optional.parent }, { $push: { child: required.number } })
     // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.new_child" action to look at the payload
   }
 
@@ -80,5 +80,5 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     system: true
   })
 
-  return { number: required.number, result: true}
+  return { number: required.number, result: true }
 }

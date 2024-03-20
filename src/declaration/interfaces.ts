@@ -8,7 +8,7 @@ import {
   INCState,
   PRBState
 } from './enum.js'
-import {IINCModify} from "./types.js";
+import { IINCModify } from './types.js'
 
 export interface IMiscResult<T> {
   // setting name
