@@ -1,7 +1,7 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {GlobalOnHoldReason, CSState} from "../src/declaration/enum";
+import {GlobalOnHoldReason, CSState, INCState} from "../src/declaration/enum";
 import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
@@ -162,6 +162,10 @@ describe('cs - basic tests', () => {
     })
 
     describe('actions: state', () => {
+
+      test('state: new - starting', async () => {
+        await checkCase(server, 'csQuery', csTestCaseNumber, 'state', CSState.NEW)
+      })
 
       test('state: new --> in progress', async() => {
         const gql = graphqlMutation('csModifyField', [],{

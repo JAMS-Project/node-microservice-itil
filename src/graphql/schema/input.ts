@@ -107,7 +107,7 @@ const schemaInput = gql`
       statement: String
       description: String
       initialReport: String
-      state: Int
+      state: PRBState
       escalated: Boolean
       asset: [String!]
       change: [String!]

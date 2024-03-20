@@ -1,12 +1,11 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {CSState, GlobalChannel, GlobalOnHoldReason, INCState} from "../src/declaration/enum";
+import {GlobalChannel, GlobalOnHoldReason, INCState} from "../src/declaration/enum";
 import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
 import {checkCase} from "./__utils__/checkCase";
-
 
 let server: FastifyInstance
 let incTestCaseNumber: string
@@ -247,6 +246,10 @@ describe('incident - basic tests', () => {
     })
 
     describe('actions: state', () => {
+
+      test('state: new - starting', async () => {
+        await checkCase(server, 'incQuery', incTestCaseNumber, 'state', INCState.NEW)
+      })
 
       test('state: new --> in progress', async () => {
 

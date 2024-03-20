@@ -171,6 +171,36 @@ describe('problem - basic tests', () => {
       expect(result.json<{ data: { prbCreateNote: boolean }}>().data.prbCreateNote).toBe(true)
     })
 
+    describe('actions: state', () => {
+
+      test('state: new - starting', async () => {
+        await checkCase(server, 'prbQuery', prbTestCaseNumber, 'state', PRBState.NEW)
+      })
+
+      test('state: new --> in progress', async () => {
+
+        const gql = graphqlMutation('prbModifyField', [], {
+          'number': {value: prbTestCaseNumber, required: true},
+          'field': {value: ['state'], type: '[String!]', required: true},
+          'user': {value: `0000001`, required: true},
+          'input': {value: {state: 'ASSESS'}, type: 'PRBModifyFields', required: true},
+        })
+        server.log.debug(gql, 'PRB:UNIT TEST:UPDATE FIELD - STATE - NEW --> ASSESS  :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        console.log(result.body)
+        expect(result.json<{ data: { prbModifyField: boolean } }>().data.prbModifyField).toBe(true)
+
+        await checkCase(server, 'prbQuery', prbTestCaseNumber, 'state', PRBState.ASSESS)
+
+      })
+
+    })
+
   })
 
 })

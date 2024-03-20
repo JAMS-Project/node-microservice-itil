@@ -16,6 +16,7 @@ const schema = schemaEnum + schemaInput + schemaType + gql`
       # PRB
       prbCreate(required: PRBRequiredFields, optional: PRBOptionalFields): createResult!
       prbCreateNote(number: String!, channel: PRBChannel!, user: String!, note: String!, type: String!): Boolean!
+      prbModifyField(number: String!, user: String!, field: [String!]!, input: PRBModifyFields!): Boolean!
     }
           
     extend type Query {
