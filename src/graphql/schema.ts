@@ -13,12 +13,16 @@ const schema = schemaEnum + schemaInput + schemaType + gql`
       incCreate(required: INCRequiredFields, optional: INCOptionalFields): createResult!
       incCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
       incModifyField(number: String!, user: String!, field: [String!]!, input: INCModifyFields!): Boolean!
+      # PRB
+      prbCreate(required: PRBRequiredFields, optional: PRBOptionalFields): createResult!
+      prbCreateNote(number: String!, channel: PRBChannel!, user: String!, note: String!, type: String!): Boolean!
     }
           
     extend type Query {
       csQuery(number: String): [csQuery!]!
       incQuery(number: String): [incQuery!]!
       incCopy(number: String!): incCopy
+      prbQuery(number: String): [prbQuery!]!
     }
 `
 

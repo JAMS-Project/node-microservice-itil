@@ -4,9 +4,12 @@ import { csModifyField } from './mutation/csModifyField.js'
 import { incCreate } from './mutation/incCreate.js'
 import { incCreateNote } from './mutation/incCreateNote.js'
 import {incModifyField} from "./mutation/incModifyField.js";
+import {prbCreate} from "./mutation/prbCreate.js";
+import {prbCreateNote} from "./mutation/prbCreateNote.js";
 import { csQuery } from './query/csQuery.js'
 import {incCopy} from "./query/incCopy.js";
 import { incQuery } from './query/incQuery.js'
+import {prbQuery} from "./query/prbQuery";
 
 const Mutation = {
   csCreate,
@@ -14,13 +17,16 @@ const Mutation = {
   csModifyField,
   incCreate,
   incCreateNote,
-  incModifyField
+  incModifyField,
+  prbCreate,
+  prbCreateNote
 }
 
 const Query = {
   csQuery,
   incCopy,
-  incQuery
+  incQuery,
+  prbQuery
 }
 
 const Types = {}

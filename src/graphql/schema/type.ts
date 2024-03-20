@@ -69,7 +69,6 @@ const schemaType = gql`
     }
     
     type prbQuery {
-      # Required
       number: String!
       user: String!
       category: String!

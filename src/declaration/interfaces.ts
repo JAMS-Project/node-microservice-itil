@@ -1,4 +1,13 @@
-import {GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState, GlobalImpact, GlobalUrgency, INCState} from './enum.js'
+import {
+  GlobalChannel,
+  GlobalOnHoldReason,
+  GlobalPriority,
+  CSState,
+  GlobalImpact,
+  GlobalUrgency,
+  INCState,
+  PRBState
+} from './enum.js'
 import {IINCModify} from "./types.js";
 
 export interface IMiscResult<T> {
@@ -161,4 +170,55 @@ export interface ICreateNote {
   type: 'note' | 'workNote'
   // display case number
   note: string
+}
+
+export interface IPRBRequiredFieldInput {
+  // display case number
+  number: string
+  // who is submitting this issue
+  user: string
+  // category
+  category: string
+  // channel in which submitted
+  channel: GlobalChannel
+  // impact
+  impact: GlobalImpact
+  // urgency
+  urgency: GlobalUrgency
+  // what's this about in a short description?
+  statement: string
+  // possibility a very long description of the issue (in markdown)
+  description: string
+}
+
+export interface IPRBOptionalFieldInput {
+  // initial report
+  initialReport?: string
+  // state
+  state: PRBState
+  // escalated or not
+  escalated: boolean
+  // asset assigned to case
+  asset?: string[]
+  // is there a change control created from this incident?
+  change?: string[]
+  // linked to a incident
+  incident?: string[]
+  // service effected
+  service?: string
+  // the offering possible from the selected service
+  offering?: string
+  // id of the user assigned the case
+  assignedTo?: string
+  // assignment group
+  assignmentGroup?: string
+  // tasks
+  tasks?: string[]
+  // kb
+  kb?: string[]
+}
+
+export interface IPRBFields {
+  required: IPRBRequiredFieldInput
+  optional?: IPRBOptionalFieldInput
 }

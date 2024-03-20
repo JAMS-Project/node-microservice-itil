@@ -19,7 +19,7 @@ beforeAll(async () => {
   await server.mongo.db.collection('prbNotes').deleteMany()
   await server.mongo.db.collection('prbDefaults').deleteMany()
 
-  await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberPro/ } } )
+  await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberPrb/ } } )
   await server.mongo.db.collection('misc').insertOne({name: 'numberPrbLen', value: 7, system: true})
   await server.mongo.db.collection('misc').insertOne({name: 'numberPrb', value: 0, system: true})
 
@@ -69,12 +69,11 @@ describe('problem - basic tests', () => {
       // update the database
       await server.mongo.db.collection('misc').updateOne({ name: 'numberPrb' }, { $set: { value: currentNumber } })
       // cs number
-      const incNUmber = zeroPad(currentNumber, valueLen)
+      const prbNUmber = zeroPad(currentNumber, valueLen)
 
       const gql = graphqlMutation('prbCreate',  ['number', 'result'],{
         'required': { value: {
-            number: `PRB${incNUmber}`,
-            initialReport: 'INC0000001',
+            number: `PRB${prbNUmber}`,
             user: '0000001',
             category: 'Hardware',
             channel: 'MANUAL',
@@ -99,7 +98,7 @@ describe('problem - basic tests', () => {
 
       prbTestCaseNumber = result.json<{ data: { prbCreate: { number: string } }}>().data.prbCreate.number
 
-      await checkCase(server, 'incQuery',prbTestCaseNumber, 'state', PRBState.NEW)
+      await checkCase(server, 'prbQuery',prbTestCaseNumber, 'state', PRBState.NEW)
 
     })
 
@@ -138,7 +137,7 @@ describe('problem - basic tests', () => {
 
       const gql = graphqlMutation('prbCreateNote', [],{
         'number': { value: prbTestCaseNumber, required: true },
-        'channel': { value: 'WEB', type: "GlobalChannel", required: true },
+        'channel': { value: 'MANUAL', type: "PRBChannel", required: true },
         'user': { value: `0000001`, required: true },
         'type': { value: 'note', required: true },
         'note': { value: 'New Note', required: true }
@@ -157,7 +156,7 @@ describe('problem - basic tests', () => {
     test('add work node', async () => {
       const gql = graphqlMutation('prbCreateNote', [],{
         'number': { value: prbTestCaseNumber, required: true },
-        'channel': { value: 'WEB', type: "GlobalChannel", required: true },
+        'channel': { value: 'MANUAL', type: "PRBChannel", required: true },
         'user': { value: `0000001`, required: true },
         'type': { value: 'workNote', required: true },
         'note': { value: 'New Work Note', required: true }
