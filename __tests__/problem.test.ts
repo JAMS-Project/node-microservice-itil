@@ -173,31 +173,54 @@ describe('problem - basic tests', () => {
 
     describe('actions: state', () => {
 
-      test('state: new - starting', async () => {
+      test('state: starting at NEW', async () => {
         await checkCase(server, 'prbQuery', prbTestCaseNumber, 'state', PRBState.NEW)
       })
 
-      test('state: new --> in progress', async () => {
+      ;["ASSESS","RCA","FIX_IN_PROGRESS","RESOLVED","CLOSED"].forEach(state => {
+
+        test(`state: change to --> ${state}`, async () => {
+
+          const gql = graphqlMutation('prbModifyField', [], {
+            'number': {value: prbTestCaseNumber, required: true},
+            'field': {value: ['state'], type: '[String!]', required: true},
+            'user': {value: `0000001`, required: true},
+            'input': {value: {state}, type: 'PRBModifyFields', required: true},
+          })
+          server.log.debug(gql, 'PRB:UNIT TEST:UPDATE FIELD - STATE - NEW --> ASSESS  :: GQL')
+
+          const result = await server.inject({
+            method: "POST",
+            body: gql,
+            path: "/graphql"
+          })
+          expect(result.json<{ data: { prbModifyField: boolean } }>().data.prbModifyField).toBe(true)
+
+          await checkCase(server, 'prbQuery', prbTestCaseNumber, 'state', PRBState[state])
+
+        })
+
+      })
+
+      test('state: CLOSED --> NEW (fail)', async () => {
 
         const gql = graphqlMutation('prbModifyField', [], {
           'number': {value: prbTestCaseNumber, required: true},
           'field': {value: ['state'], type: '[String!]', required: true},
           'user': {value: `0000001`, required: true},
-          'input': {value: {state: 'ASSESS'}, type: 'PRBModifyFields', required: true},
+          'input': {value: {state: 'NEW'}, type: 'PRBModifyFields', required: true},
         })
-        server.log.debug(gql, 'PRB:UNIT TEST:UPDATE FIELD - STATE - NEW --> ASSESS  :: GQL')
 
         const result = await server.inject({
           method: "POST",
           body: gql,
           path: "/graphql"
         })
-        console.log(result.body)
-        expect(result.json<{ data: { prbModifyField: boolean } }>().data.prbModifyField).toBe(true)
-
-        await checkCase(server, 'prbQuery', prbTestCaseNumber, 'state', PRBState.ASSESS)
+        expect(result.json<{ errors: [{ message: string}] }>().errors[0].message).toBe("Progress for problem state can only go forward. Not backwards.")
+        await checkCase(server, 'prbQuery', prbTestCaseNumber, 'state', PRBState.CLOSED)
 
       })
+
 
     })
 

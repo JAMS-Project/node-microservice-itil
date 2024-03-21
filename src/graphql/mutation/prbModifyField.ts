@@ -39,9 +39,13 @@ export const prbModifyField = async (_parent: any, args: IINCModifyFields, conte
         case 'holdReason':
           data = GlobalOnHoldReason[input.holdReason]
           break
-        case 'state':
+        case 'state': {
           data = PRBState[input.state]
+          if (findCase[fieldLoop] > data) {
+            throw new Error('Progress for problem state can only go forward. Not backwards.')
+          }
           break
+        }
         case 'escalated':
           data = input.escalated
           break
