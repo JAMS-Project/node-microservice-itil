@@ -1,4 +1,4 @@
-FROM node:20.10.0-alpine3.19
+FROM node:20.11.0-alpine3.19
 
 # set working directory in the image
 WORKDIR /home/node/app

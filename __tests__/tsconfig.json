@@ -1,0 +1,8 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "noEmit": true,
+        "typeRoots": ["../node_modules/@types", "../@types"]
+    },
+    "include": ["./**/*", "../src/**/*"]
+}
