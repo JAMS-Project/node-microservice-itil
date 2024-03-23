@@ -163,194 +163,46 @@ describe('cs - basic tests', () => {
 
     describe('actions: state', () => {
 
-      test('state: new - starting', async () => {
+      test('...new', async () => {
         await checkCase(server, 'csQuery', csTestCaseNumber, 'state', CSState.NEW)
       })
 
-      test('state: new --> in progress', async() => {
-        const gql = graphqlMutation('csModifyField', [],{
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'IN_PROGRESS' }, type: 'CSModifyFields', required: true },
+
+      ;[{
+        state: "IN_PROGRESS", holdReason: "UNSET"},
+        {state: "ON_HOLD", holdReason: "INFO"},
+        {state: "SOLUTION_PROPOSED", holdReason: "UNSET"},
+        {state: "SOLUTION_REJECTED", holdReason: "UNSET"},
+        {state: "IN_PROGRESS", holdReason: "UNSET"},
+        {state: "SOLUTION_PROPOSED", holdReason: "UNSET"},
+        {state: "RESOLVED", holdReason: "UNSET"},
+        {state: "CLOSED", holdReason: "UNSET"}
+      ].forEach((fullState: {
+        holdReason: string,
+        state: string
+      }) => {
+
+        test(`...change to ${fullState.state} with hold reason ${fullState.holdReason}`, async () => {
+
+          const gql = graphqlMutation('csModifyField', [], {
+            'number': {value: csTestCaseNumber, required: true},
+            'field': {value: ['state','holdReason'], type: '[String!]', required: true},
+            'user': {value: `0000001`, required: true},
+            'input': {value: {...fullState}, type: 'CSModifyFields', required: true},
+          })
+          server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE :: GQL')
+
+          const result = await server.inject({
+            method: "POST",
+            body: gql,
+            path: "/graphql"
+          })
+          expect(result.json<{ data: { csModifyField: boolean } }>().data.csModifyField).toBe(true)
+
+          await checkCase(server, 'csQuery', csTestCaseNumber, 'state', CSState[fullState.state])
+          await checkCase(server, 'csQuery',csTestCaseNumber, 'holdReason', GlobalOnHoldReason[fullState.holdReason])
+
         })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - NEW --> IN PROGRESS  :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.IN_PROGRESS)
-
-      })
-
-      test('state: in progress --> on hold, awaiting caller', async () => {
-        const gql = graphqlMutation('csModifyField', [],{
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'ON_HOLD', holdReason: 'INFO'  }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> ON HOLD, NEED INFO :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.ON_HOLD)
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'holdReason', GlobalOnHoldReason.INFO)
-
-      })
-
-      test('state: on hold, awaiting caller --> in progress', async () => {
-
-        // On hold, awaiting caller state can flip to this state manually,
-        // or can be trigger by someone "adding a note" to the CS case.
-        // This would come in the form
-        // of a rabbitmq listing to itil.cs.note listener
-
-        const gql = graphqlMutation('csModifyField', [],{
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state', 'holdReason'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'IN_PROGRESS', holdReason: 'UNSET'  }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - ON HOLD, NEED INFO --> IN PROGRESS :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.IN_PROGRESS)
-
-      })
-
-      test('state: in progress --> proposed solution', async () => {
-        const gql = graphqlMutation('csModifyField', [], {
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'SOLUTION_PROPOSED' }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> SOLUTION PROPOSED :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
-
-      })
-
-      test('state: proposed solution --> rejected solution', async () => {
-        const gql = graphqlMutation('csModifyField', [], {
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'SOLUTION_REJECTED'  }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION PROPOSED --> SOLUTION REJECTED :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.SOLUTION_REJECTED)
-
-      })
-
-      test('state: rejected solution --> in progress', async () => {
-        const gql = graphqlMutation('csModifyField', [], {
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'IN_PROGRESS'  }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION REJECTED --> IN PROGRESS :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.IN_PROGRESS)
-
-      })
-
-      test('state: in progress --> proposed solution', async () => {
-        const gql = graphqlMutation('csModifyField', [], {
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'SOLUTION_PROPOSED' }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - IN PROGRESS --> SOLUTION PROPOSED :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.SOLUTION_PROPOSED)
-
-      })
-
-      test('state: proposed solution --> resolved', async () => {
-        const gql = graphqlMutation('csModifyField', [], {
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'RESOLVED',  }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - SOLUTION PROPOSED -->RESOLVED :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.RESOLVED)
-
-      })
-
-      test('state: resolved --> closed', async () => {
-        const gql = graphqlMutation('csModifyField', [], {
-          'number': { value: csTestCaseNumber, required: true },
-          'field': { value: ['state'], type: '[String!]', required: true },
-          'user': { value: `0000001`, required: true },
-          'input': { value: { state: 'CLOSED'  }, type: 'CSModifyFields', required: true },
-        })
-        server.log.debug(gql, 'CS:UNIT TEST:UPDATE FIELD - STATE - RESOLVED --> CLOSED :: GQL')
-
-        const result = await server.inject({
-          method: "POST",
-          body: gql,
-          path: "/graphql"
-        })
-        expect(result.json<{ data: { csModifyField: boolean }}>().data.csModifyField).toBe(true)
-
-        await checkCase(server, 'csQuery',csTestCaseNumber, 'state', CSState.CLOSED)
 
       })
 
