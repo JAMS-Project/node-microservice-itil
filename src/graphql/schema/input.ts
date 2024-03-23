@@ -122,6 +122,53 @@ const schemaInput = gql`
       kb: [String!]
     }
     
+    input CHGRequiredFields {
+      number: String!
+      user: String!
+      category: String!
+      channel: PRBChannel!
+      impact: GlobalImpact!
+      urgency: GlobalUrgency!
+      risk: CHGRisk!
+      shortDescription: String!
+      description: String!
+    }
+    
+    input CHGOptionalFields {
+      state: Int
+      escalated: Boolean
+      assignmentGroup: String
+      assignedTo: String
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+    }
+    
+    input CHGModifyFields {
+      user: String
+      requester: String
+      category: String
+      channel: PRBChannel
+      impact: GlobalImpact
+      urgency: GlobalUrgency
+      risk: CHGRisk
+      shortDescription: String
+      description: String
+      state: Int
+      escalated: Boolean
+      assignmentGroup: String
+      assignedTo: String
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+      closedDate: String
+      closedNotes: String
+      closedBy: String
+    }
+    
+    
 `
 
 export default schemaInput

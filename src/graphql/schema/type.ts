@@ -35,7 +35,7 @@ const schemaType = gql`
       category: String!
       impact: Int!
       urgency: Int!
-      # This will be required in the future.
+      # This will be required in the future since this will calculated by the system
       priority: Int
       shortDescription: String!
       description: String!
@@ -75,7 +75,7 @@ const schemaType = gql`
       channel: Int!
       impact: Int!
       urgency: Int!
-      # This will be required in the future.
+      # This will be required in the future since this will calculated by the system
       priority: Int
       statement: String!
       description: String!
@@ -94,6 +94,35 @@ const schemaType = gql`
       # KB Articles
       kb: [String!]
     }
+    
+    type chgQuery {
+      # Required
+      number: String!
+      user: String!
+      requester: String!
+      category: String!
+      channel: Int!
+      impact: Int!
+      urgency: Int!
+      risk: Int!
+      # This will be required in the future since this will calculated by the system
+      priority: Int
+      shortDescription: String!
+      description: String!
+      # Optional      
+      state: Int
+      escalated: Boolean
+      assignmentGroup: String
+      assignedTo: String
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+      closedDate: String
+      closedNotes: String
+      closedBy: String
+    }
+    
 `
 
 export default schemaType

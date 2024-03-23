@@ -35,6 +35,13 @@ const schemaEnum = gql`
       CRITICAL
     }
     
+    enum CHGRisk {
+      LOW,
+      MODERATE,
+      HIGH,
+      CRITICAL
+    }
+    
     enum CSState {
       NEW,
       IN_PROGRESS,
@@ -54,15 +61,6 @@ const schemaEnum = gql`
       SCHEDULED,
       DEPENDENCY
     }
-
-    enum PRBState {
-      NEW,
-      ASSESS,
-      RCA,
-      FIX_IN_PROGRESS,
-      RESOLVED,
-      CLOSED
-    }
     
     enum INCState {
       NEW,
@@ -81,6 +79,31 @@ const schemaEnum = gql`
       SCHEDULED,
       DEPENDENCY
     }
+    
+    enum PRBState {
+      NEW,
+      ASSESS,
+      RCA,
+      FIX_IN_PROGRESS,
+      RESOLVED,
+      CLOSED
+    }
+    
+    enum CHGState {
+      NEW,
+      # Access
+      APPROVAL_WAITING,
+      # Access
+      APPROVAL_CAB,
+      APPROVAL_REJECTED,
+      SCHEDULED,
+      ON_HOLD,
+      IN_PROGRESS,
+      REVIEW,
+      CLOSED,
+      CANCELLED
+    }
+
  `
 
 export default schemaEnum
