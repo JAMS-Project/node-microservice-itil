@@ -7,7 +7,6 @@ const schemaType = gql`
     }
 
     type csQuery { 
-      id: ID!
       number: String!
       state: Int!
       holdReason: Int

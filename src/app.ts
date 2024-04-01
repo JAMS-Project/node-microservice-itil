@@ -1,4 +1,4 @@
-import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload'
+import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'path'
 import { FastifyServerOptions, FastifyInstance } from 'fastify'

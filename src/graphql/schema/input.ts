@@ -125,8 +125,9 @@ const schemaInput = gql`
     input CHGRequiredFields {
       number: String!
       user: String!
+      requester: String!
       category: String!
-      channel: PRBChannel!
+      channel: GlobalChannel!
       impact: GlobalImpact!
       urgency: GlobalUrgency!
       risk: CHGRisk!
@@ -149,7 +150,7 @@ const schemaInput = gql`
       user: String
       requester: String
       category: String
-      channel: PRBChannel
+      channel: GlobalChannel
       impact: GlobalImpact
       urgency: GlobalUrgency
       risk: CHGRisk

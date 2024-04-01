@@ -17,6 +17,9 @@ const schema = schemaEnum + schemaInput + schemaType + gql`
       prbCreate(required: PRBRequiredFields, optional: PRBOptionalFields): createResult!
       prbCreateNote(number: String!, channel: PRBChannel!, user: String!, note: String!, type: String!): Boolean!
       prbModifyField(number: String!, user: String!, field: [String!]!, input: PRBModifyFields!): Boolean!
+      # CHG
+      chgCreate(required: CHGRequiredFields, optional: CHGOptionalFields): createResult!
+      chgCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
     }
           
     extend type Query {
@@ -24,6 +27,7 @@ const schema = schemaEnum + schemaInput + schemaType + gql`
       incQuery(number: String): [incQuery!]!
       incCopy(number: String!): incCopy
       prbQuery(number: String): [prbQuery!]!
+      chgQuery(number: String): [chgQuery!]!
     }
 `
 

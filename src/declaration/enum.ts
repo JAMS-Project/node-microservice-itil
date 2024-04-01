@@ -68,3 +68,23 @@ export enum PRBChannel {
   AUTO,
   AI
 }
+
+export enum CHGState {
+  NEW,
+  APPROVAL_WAITING,
+  APPROVAL_CAB,
+  APPROVAL_REJECTED,
+  SCHEDULED,
+  ON_HOLD,
+  IN_PROGRESS,
+  REVIEW,
+  CLOSED,
+  CANCELLED
+}
+
+export enum CHGRisk {
+  LOW,
+  MODERATE,
+  HIGH,
+  CRITICAL
+}
