@@ -58,7 +58,7 @@
         "@semantic-release/changelog": "^6.0.3",
         "@semantic-release/git": "^10.0.1",
         "@the-rabbit-hole/semantic-release-config": "^1.5.0",
-        "@types/node": "^20.12.2",
+        "@types/node": "^20.12.5",
         "@vitest/coverage-v8": "^1.4.0",
         "@vitest/ui": "^1.4.0",
         "gql-query-builder": "^3.8.0",
@@ -70,8 +70,8 @@
         "ts-node": "^10.9.2",
         "ts-standard": "^12.0.2",
         "tsd": "^0.31.0",
-        "typedoc": "^0.25.12",
-        "typescript": "^5.4.3",
+        "typedoc": "^0.25.13",
+        "typescript": "^5.4.4",
         "vitest": "^1.4.0"
     }
 }

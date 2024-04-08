@@ -3,7 +3,7 @@ import schemaEnum from './schema/enum.js'
 import schemaInput from './schema/input.js'
 import schemaType from './schema/type.js'
 
-const schema = schemaEnum + schemaInput + schemaType + gql`    
+const schema = schemaEnum + schemaInput + schemaType + gql`
     extend type Mutation {
       # CS
       csCreate(number: String!, channel: GlobalChannel!, user: String!, priority: CSPriority, shortDescription: String!, description: String!, optional: CSModifyFields): createResult!

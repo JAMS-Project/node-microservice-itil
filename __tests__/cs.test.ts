@@ -210,7 +210,67 @@ describe('cs - basic tests', () => {
 
     describe('actions: create', () => {
 
-      test.todo('... incident')
+      test('... incident', async () => {
+
+        const gqlCs = graphqlQuery(
+          'csQuery',
+          ['user', 'asset', 'number'],
+          {
+            'number': { value: csTestCaseNumber }
+          }
+        )
+        server.log.debug(gqlCs, 'CS:UNIT TEST:QUERY SINGLE :: GQL')
+
+        const resultCs = await server.inject({
+          method: "POST",
+          body: gqlCs,
+          path: "/graphql"
+        })
+
+        // total length of numbers
+        const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
+        // get number
+        let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
+        // increase count by one
+        currentNumber++
+        // update the database
+        await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
+        // cs number
+        const incNUmber = zeroPad(currentNumber, valueLen)
+
+        const gql = graphqlMutation('incCreate',  ['number', 'result'],{
+          'required': {
+            value: {
+              number: `INC${incNUmber}`,
+              channel: 'SELF_SERVE',
+              category: 'Hardware',
+              user: resultCs.json<{ data: { csQuery: [{ user: string }] }}>().data.csQuery[0].user,
+              impact: 'LOW',
+              urgency: 'LOW',
+              shortDescription: 'Hello, World!',
+              description: 'Foo Bar'
+            },
+            type: 'INCRequiredFields',
+            required: true
+          },
+          'optional' : {
+            value: {
+              asset: resultCs.json<{ data: { csQuery: [{ asset?: string }] }}>().data.csQuery[0].asset || '',
+              parent: resultCs.json<{ data: { csQuery: [{ number: string }] }}>().data.csQuery[0].number,
+            },
+            type: 'INCOptionalFields'
+          }
+        })
+        server.log.debug(gql, 'INC:UNIT TEST:CREATE :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { incCreate: { result: boolean } }}>().data.incCreate.result).toBe(true)
+
+      })
 
       test.todo('... request')
 

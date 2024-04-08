@@ -2,7 +2,7 @@ import { GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState } from '../.
 import { ICSCreateCase } from '../../declaration/interfaces.js'
 
 export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<{ number?: string, result: boolean }> => {
-  const { number, channel, contact, priority, asset, shortDescription, description } = args
+  const { number, channel, user, priority, asset, shortDescription, description } = args
 
   // first, lets check to make sure that the number isn't already used
   const result = await context.app.mongo.db.collection('csItems').countDocuments({ number })
@@ -25,7 +25,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
     state: CSState.NEW, // @todo This can be override by backend users
     holdReason: GlobalOnHoldReason.UNSET,
     dateCreated: currentDateTime,
-    user: contact,
+    user,
     channel: GlobalChannel[channel],
     priority: GlobalPriority[priority],
     escalated: false, // @todo Possible based off "field" in future or asset
@@ -50,7 +50,7 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
     },
     ref: id,
     type: 'field', // Field Modification Change
-    user: contact
+    user
   })
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload

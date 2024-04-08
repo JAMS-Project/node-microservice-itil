@@ -23,7 +23,7 @@ export interface ICSCreateCase {
   // channel in which submitted
   channel: GlobalChannel
   // who is submitting this issue
-  contact: string
+  user: string
   // priority they have selected or assigned
   priority: GlobalPriority
   // asset assigned to case
