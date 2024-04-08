@@ -49,7 +49,7 @@ export const chgCreate = async (parent: any, args: ICHGFields, context: any): Pr
     risk: CHGRisk[required.risk]
   })
 
-  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.create" action to look at the payload
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.chg.create" action to look at the payload
 
   context.app.log.debug(id.toString(), 'PRB: MAIN ID')
 

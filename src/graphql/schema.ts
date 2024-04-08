@@ -20,6 +20,7 @@ const schema = schemaEnum + schemaInput + schemaType + gql`
       # CHG
       chgCreate(required: CHGRequiredFields, optional: CHGOptionalFields): createResult!
       chgCreateNote(number: String!, channel: GlobalChannel!, user: String!, note: String!, type: String!): Boolean!
+      chgModifyField(number: String!, user: String!, field: [String!]!, input: CHGModifyFields!): Boolean!
     }
           
     extend type Query {

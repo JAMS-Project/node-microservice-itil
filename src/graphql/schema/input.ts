@@ -8,7 +8,6 @@ const schemaInput = gql`
       user: String
       escalated: Boolean
       asset: String
-      user: String
       priority: CSPriority
       assignedTo: String
       assignmentGroup: String
@@ -58,7 +57,6 @@ const schemaInput = gql`
       holdReason: INCOnHoldReason
       escalated: Boolean
       asset: String
-      category: String
       subCategory: String
       problem: String
       change: String
@@ -156,7 +154,7 @@ const schemaInput = gql`
       risk: CHGRisk
       shortDescription: String
       description: String
-      state: Int
+      state: CHGState
       escalated: Boolean
       assignmentGroup: String
       assignedTo: String

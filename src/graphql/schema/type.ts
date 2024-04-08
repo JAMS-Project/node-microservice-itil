@@ -40,10 +40,8 @@ const schemaType = gql`
       description: String!
       state: Int!
       holdReason: Int
-      channel: Int!
       escalated: Boolean!
       asset: String
-      category: String!
       subCategory: String
       problem: String
       change: String

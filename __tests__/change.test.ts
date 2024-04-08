@@ -168,4 +168,57 @@ describe('change - basic tests', () => {
 
   })
 
+  describe('actions: state', () => {
+
+    test('state: starting at NEW', async () => {
+      await checkCase(server, 'chgQuery', chgTestCaseNumber, 'state', CHGState.NEW)
+    })
+
+    ;["APPROVAL_WAITING","APPROVAL_CAB","SCHEDULED","IN_PROGRESS","REVIEW","CLOSED"].forEach(state => {
+
+      test(`state: change to --> ${state}`, async () => {
+
+        const gql = graphqlMutation('chgModifyField', [], {
+          'number': {value: chgTestCaseNumber, required: true},
+          'field': {value: ['state'], type: '[String!]', required: true},
+          'user': {value: `0000001`, required: true},
+          'input': {value: {state}, type: 'CHGModifyFields', required: true},
+        })
+        server.log.debug(gql, 'CHG:UNIT TEST:UPDATE FIELD - STATE - NEW --> ASSESS  :: GQL')
+
+        const result = await server.inject({
+          method: "POST",
+          body: gql,
+          path: "/graphql"
+        })
+        expect(result.json<{ data: { chgModifyField: boolean } }>().data.chgModifyField).toBe(true)
+
+        await checkCase(server, 'chgQuery', chgTestCaseNumber, 'state', CHGState[state])
+
+      })
+
+    })
+
+    test('state: CLOSED --> NEW (fail)', async () => {
+
+      const gql = graphqlMutation('chgModifyField', [], {
+        'number': {value: chgTestCaseNumber, required: true},
+        'field': {value: ['state'], type: '[String!]', required: true},
+        'user': {value: `0000001`, required: true},
+        'input': {value: {state: 'NEW'}, type: 'CHGModifyFields', required: true},
+      })
+
+      const result = await server.inject({
+        method: "POST",
+        body: gql,
+        path: "/graphql"
+      })
+      expect(result.json<{ errors: [{ message: string}] }>().errors[0].message).toBe("Unable to change the state. Not allowed from current state.")
+      await checkCase(server, 'chgQuery', chgTestCaseNumber, 'state', CHGState.CLOSED)
+
+    })
+
+
+  })
+
 })

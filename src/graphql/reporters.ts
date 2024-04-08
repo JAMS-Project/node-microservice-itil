@@ -1,5 +1,6 @@
 import { chgCreate } from './mutation/chgCreate.js'
-import {chgCreateNote} from "./mutation/chgCreateNote";
+import {chgCreateNote} from "./mutation/chgCreateNote.js";
+import {chgModifyField} from "./mutation/chgModifyField.js";
 import { csCreate } from './mutation/csCreate.js'
 import { csCreateNote } from './mutation/csCreateNote.js'
 import { csModifyField } from './mutation/csModifyField.js'
@@ -18,6 +19,7 @@ import { prbQuery } from './query/prbQuery.js'
 const Mutation = {
   chgCreate,
   chgCreateNote,
+  chgModifyField,
   csCreate,
   csCreateNote,
   csModifyField,

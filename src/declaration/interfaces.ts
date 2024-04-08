@@ -275,3 +275,57 @@ export interface ICHGFields {
   required: ICHGRequiredFieldInput
   optional?: ICHGOptionalFieldInput
 }
+
+export interface ICHGModifyFieldInput {
+  // who is submitting this change
+  user: string
+  // who is requester this change
+  requester: string
+  // category
+  category: string
+  // channel in which submitted
+  channel: GlobalChannel
+  // impact
+  impact: GlobalImpact
+  // urgency
+  urgency: GlobalUrgency
+  // risk
+  risk: CHGRisk
+  // what's this about in a short description?
+  shortDescription: string
+  // possibility a very long description of the issue (in markdown)
+  description: string
+  // state
+  state: CHGState
+  // escalated or not
+  escalated: boolean
+  // id of the user assigned the case
+  assignedTo?: string
+  // assignment group
+  assignmentGroup?: string
+  // id of the user assigned the case
+  plannedStartDate?: string
+  // assignment group
+  plannedEndDate?: string
+  // id of the user assigned the case
+  actualStartDate?: string
+  // assignment group
+  actualEndDate?: string
+  // id of the user assigned the case
+  closedDate?: string
+  // assignment group
+  closedNotes?: string
+  // assignment group
+  closedBy?: string
+}
+
+export interface ICHGModifyFields {
+  // ID of the user
+  user: string
+  // number of the incident
+  number: string
+  // field we are modifying
+  field: string[]
+  // the input
+  input: ICHGModifyFieldInput
+}
