@@ -1,7 +1,7 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {GlobalOnHoldReason, CSState, INCState} from "../src/declaration/enum";
+import {GlobalOnHoldReason, CSState, INCState, GlobalChannel} from "../src/declaration/enum";
 import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
@@ -21,6 +21,9 @@ beforeAll(async () => {
   await server.mongo.db.collection('misc').deleteMany( { name: { $regex: /numberCs/ } } )
   await server.mongo.db.collection('misc').insertOne({name: 'numberCsLen', value: 7, system: true})
   await server.mongo.db.collection('misc').insertOne({name: 'numberCs', value: 0, system: true})
+
+  await server.mongo.db.collection('csDefaults').insertOne({name: 'state', value: CSState.NEW, system: true})
+  await server.mongo.db.collection('csDefaults').insertOne({name: 'escalated', value: false, system: true})
 })
 
 afterAll(async () => {
@@ -65,16 +68,19 @@ describe('cs - basic tests', () => {
       const csNUmber = zeroPad(currentNumber, valueLen)
 
       const gql = graphqlMutation('csCreate',  ['number','result'],{
-          'number': { value: `CS${csNUmber}`, required: true },
-          'channel': {
-            value: 'SELF_SERVE',
-            type: "GlobalChannel", required: true },
-          'user': { value: '00000001', required: true },
-          'priority': {
-            value: 'LOW',
-            type: "CSPriority", required: true },
-          'shortDescription': { value: 'Hello, World!', required: true },
-          'description': { value: 'Foo Bar', required: true },
+        'required': {
+          value: {
+            number: `CS${csNUmber}`,
+            channel: 'SELF_SERVE',
+            category: 'Hardware',
+            user: '0000001',
+            priority: 'LOW',
+            shortDescription: 'Hello, World!',
+            description: 'Foo Bar'
+          },
+          type: 'CSRequiredFields',
+          required: true
+        }
       })
       server.log.debug(gql, 'CS:UNIT TEST:CREATE :: GQL')
 

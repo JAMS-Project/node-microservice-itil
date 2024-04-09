@@ -57,7 +57,7 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.create" action to look at the payload
 
-  context.app.log.debug(id.toString(), 'CS: MAIN ID')
+  context.app.log.debug(id.toString(), 'INC: MAIN ID')
 
   await context.app.mongo.db.collection('incActivityLog').insertOne({
     date: currentDateTime,
@@ -79,6 +79,8 @@ export const incCreate = async (parent: any, args: IINCFields, context: any): Pr
     user: '',
     system: true
   })
+
+  // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.inc.activityLog" action to look at the payload
 
   return { number: required.number, result: true }
 }

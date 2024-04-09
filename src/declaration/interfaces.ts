@@ -17,7 +17,7 @@ export interface IMiscResult<T> {
   value: T
 }
 
-export interface ICSCreateCase {
+export interface ICSRequiredFieldInput {
   // display case number
   number: string
   // channel in which submitted
@@ -26,19 +26,34 @@ export interface ICSCreateCase {
   user: string
   // priority they have selected or assigned
   priority: GlobalPriority
-  // asset assigned to case
-  asset?: string
   // what's this about in a short description?
   shortDescription: string
   // possibility a very long description of the issue (in markdown)
   description: string
 }
 
+export interface ICSOptionalFieldInput {
+  // state
+  state: CSState
+  // escalated or not
+  escalated: boolean
+  // asset assigned to case
+  asset?: string
+}
+
+export interface ICSFields {
+  required: ICSRequiredFieldInput,
+  optional: IINCOptionalFieldInput
+}
+
+
 export interface ICSQuery {
   // display case number
   number: string
   // channel in which submitted
   channel: string
+  // category
+  category: string
   // who is submitting this issue
   contact: string
   // priority they have selected or assigned

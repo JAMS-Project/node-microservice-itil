@@ -1,39 +1,36 @@
 import { GlobalChannel, GlobalOnHoldReason, GlobalPriority, CSState } from '../../declaration/enum.js'
-import { ICSCreateCase } from '../../declaration/interfaces.js'
+import { ICSFields, ICSOptionalFieldInput } from '../../declaration/interfaces.js'
 
-export const csCreate = async (parent: any, args: ICSCreateCase, context: any): Promise<{ number?: string, result: boolean }> => {
-  const { number, channel, user, priority, asset, shortDescription, description } = args
+export const csCreate = async (parent: any, args: ICSFields, context: any): Promise<{ number?: string, result: boolean }> => {
+
+  const { required, optional: inputOptional } = args
 
   // first, lets check to make sure that the number isn't already used
-  const result = await context.app.mongo.db.collection('csItems').countDocuments({ number })
+  const result = await context.app.mongo.db.collection('csItems').countDocuments({ number: required.number })
   if (result > 0) {
     throw new Error('Number already being used. Unable to submit.')
   }
 
-  // second, check to make sure the contact exists
-  // @todo RabbitMQ Call to Users Service via RPC to check to make sure user exists
+  const getDefaults = await context.app.mongo.db.collection('csDefaults').find().toArray()
+  const outputObject: { [key: string]: string | number | boolean } = {}
+  getDefaults.forEach((item: { name: string, value: string | number | boolean }): void => {
+    outputObject[item.name] = item.value
+  })
 
-  // this, if the asset exists, check to make sure it a valid one
-  if (typeof asset !== 'undefined') {
-    // @todo RabbitMQ Call to CMDB Service via RPC to validate it exists
+  const optional: ICSOptionalFieldInput = {
+    asset: '',
+    escalated: false,
+    state: 0
   }
+  Object.assign(optional, outputObject, inputOptional)
 
   const currentDateTime = new Date()
 
   const { insertedId: id } = await context.app.mongo.db.collection('csItems').insertOne({
-    number,
-    state: CSState.NEW, // @todo This can be override by backend users
-    holdReason: GlobalOnHoldReason.UNSET,
-    dateCreated: currentDateTime,
-    user,
-    channel: GlobalChannel[channel],
-    priority: GlobalPriority[priority],
-    escalated: false, // @todo Possible based off "field" in future or asset
-    asset,
-    assignedTo: '',
-    assignmentGroup: '',
-    shortDescription,
-    description
+    ...required,
+    ...optional,
+    channel: GlobalChannel[required.channel],
+    priority: GlobalPriority[required.priority],
   })
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.create" action to look at the payload
@@ -43,17 +40,15 @@ export const csCreate = async (parent: any, args: ICSCreateCase, context: any): 
   await context.app.mongo.db.collection('csActivityLog').insertOne({
     date: currentDateTime,
     fields: {
-      state: CSState.NEW,
-      assignedTo: '',
-      assignmentGroup: '',
-      shortDescription
+
     },
     ref: id,
-    type: 'field', // Field Modification Change
-    user
+    type: 'field',
+    user: '',
+    system: true
   })
 
   // @todo RabbitMQ Call to Let Know All Services that want to listen for "itil.cs.activityLog" action to look at the payload
 
-  return { number, result: true }
+  return { number: required.number, result: true }
 }
