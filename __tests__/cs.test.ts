@@ -1,7 +1,7 @@
 import fastify, {FastifyInstance } from "fastify";
 import {describe, test, beforeAll, afterAll, expect } from 'vitest';
 import buildApp from '../src/app'
-import {GlobalOnHoldReason, CSState, INCState, GlobalChannel} from "../src/declaration/enum";
+import {GlobalOnHoldReason, CSState} from "../src/declaration/enum";
 import {zeroPad} from "../src/helpers/utils";
 import graphqlMutation from "./__fixtures__/graphqlMutation";
 import graphqlQuery from "./__fixtures__/graphqlQuery";
@@ -56,21 +56,18 @@ describe('cs - basic tests', () => {
 
     test('create', async() => {
 
-      // total length of numbers
-      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberCsLen' })
-      // get number
-      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberCs' })
-      // increase count by one
-      currentNumber++
-      // update the database
-      await server.mongo.db.collection('misc').updateOne({ name: 'numberCs' }, { $set: { value: currentNumber } })
-      // cs number
-      const csNUmber = zeroPad(currentNumber, valueLen)
+      const gqlGetCsNUmber = graphqlQuery('getCSNumber')
+      const resultCsNUmber = await server.inject({
+        method: "POST",
+        body: gqlGetCsNUmber,
+        path: "/graphql"
+      })
+      csTestCaseNumber = resultCsNUmber.json<{ data: { getCSNumber: string }}>().data.getCSNumber
 
       const gql = graphqlMutation('csCreate',  ['number','result'],{
         'required': {
           value: {
-            number: `CS${csNUmber}`,
+            number: csTestCaseNumber,
             channel: 'SELF_SERVE',
             category: 'Hardware',
             user: '0000001',
@@ -233,21 +230,17 @@ describe('cs - basic tests', () => {
           path: "/graphql"
         })
 
-        // total length of numbers
-        const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
-        // get number
-        let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
-        // increase count by one
-        currentNumber++
-        // update the database
-        await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
-        // cs number
-        const incNUmber = zeroPad(currentNumber, valueLen)
+        const gqlGetIncNUmber = graphqlQuery('getINCNumber')
+        const resultIncNUmber = await server.inject({
+          method: "POST",
+          body: gqlGetIncNUmber,
+          path: "/graphql"
+        })
 
         const gql = graphqlMutation('incCreate',  ['number', 'result'],{
           'required': {
             value: {
-              number: `INC${incNUmber}`,
+              number: resultIncNUmber.json<{ data: { getINCNumber: string }}>().data.getINCNumber,
               channel: 'SELF_SERVE',
               category: 'Hardware',
               user: resultCs.json<{ data: { csQuery: [{ user: string }] }}>().data.csQuery[0].user,

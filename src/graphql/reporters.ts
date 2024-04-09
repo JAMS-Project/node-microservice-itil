@@ -12,6 +12,10 @@ import { prbCreateNote } from './mutation/prbCreateNote.js'
 import { prbModifyField } from './mutation/prbModifyField.js'
 import {chgQuery} from "./query/chgQuery";
 import { csQuery } from './query/csQuery.js'
+import {getCHGNumber} from "./query/getCHGNumber";
+import {getCSNumber} from "./query/getCSNumber.js";
+import {getINCNumber} from "./query/getINCNumber";
+import {getPRBNumber} from "./query/getPRBNumber";
 import { incCopy } from './query/incCopy.js'
 import { incQuery } from './query/incQuery.js'
 import { prbQuery } from './query/prbQuery.js'
@@ -32,11 +36,15 @@ const Mutation = {
 }
 
 const Query = {
+  chgQuery,
   csQuery,
+  getCHGNumber,
+  getCSNumber,
+  getINCNumber,
+  getPRBNumber,
   incCopy,
   incQuery,
-  prbQuery,
-  chgQuery
+  prbQuery
 }
 
 const Types = {}
