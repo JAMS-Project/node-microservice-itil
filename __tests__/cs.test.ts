@@ -121,7 +121,7 @@ describe('cs - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { csQuery: [{ number: string}] }}>().data.csQuery[0].number).toBe("CS0000001")
+      expect(result.json<{ data: { csQuery: [{ number: string}] }}>().data.csQuery[0].number).toBe(csTestCaseNumber)
       expect(result.json<{ data: { csQuery: [{ number: string}] }}>().data.csQuery.length).toBe(1)
 
     })

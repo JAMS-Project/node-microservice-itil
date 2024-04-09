@@ -60,20 +60,16 @@ describe('incident - basic tests', () => {
 
     test('create', async() => {
 
-      // total length of numbers
-      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
-      // get number
-      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
-      // increase count by one
-      currentNumber++
-      // update the database
-      await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
-      // cs number
-      const incNUmber = zeroPad(currentNumber, valueLen)
+      const gqlGetIncNUmber = graphqlQuery('getINCNumber')
+      const resultIncNUmber = await server.inject({
+        method: "POST",
+        body: gqlGetIncNUmber,
+        path: "/graphql"
+      })
 
       const gql = graphqlMutation('incCreate',  ['number', 'result'],{
         'required': { value: {
-          number: `INC${incNUmber}`,
+          number: resultIncNUmber.json<{ data: { getINCNumber: string }}>().data.getINCNumber,
             channel: 'SELF_SERVE',
             category: 'Hardware',
             user: '0000001',
@@ -105,21 +101,17 @@ describe('incident - basic tests', () => {
 
       test('... incident as a child', async () => {
 
-        // total length of numbers
-        const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberIncLen' })
-        // get number
-        let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberInc' })
-        // increase count by one
-        currentNumber++
-        // update the database
-        await server.mongo.db.collection('misc').updateOne({ name: 'numberInc' }, { $set: { value: currentNumber } })
-        // cs number
-        const incNUmber = zeroPad(currentNumber, valueLen)
+        const gqlGetIncNUmber = graphqlQuery('getINCNumber')
+        const resultIncNUmber = await server.inject({
+          method: "POST",
+          body: gqlGetIncNUmber,
+          path: "/graphql"
+        })
 
         const gql = graphqlMutation('incCreate', ['number', 'result'],{
           'required': {
             value: {
-              number: `INC${incNUmber}`,
+              number: resultIncNUmber.json<{ data: { getINCNumber: string }}>().data.getINCNumber,
               channel: 'SELF_SERVE',
               category: 'Hardware',
               user: '0000001',
@@ -146,7 +138,7 @@ describe('incident - basic tests', () => {
           path: "/graphql"
         })
         expect(result.json<{ data: { incCreate: { result: boolean} }}>().data.incCreate.result).toBe(true)
-        expect(result.json<{ data: { incCreate: { number: string} }}>().data.incCreate.number).toBe('INC0000002')
+        expect(result.json<{ data: { incCreate: { number: string} }}>().data.incCreate.number).toBe(resultIncNUmber.json<{ data: { getINCNumber: string }}>().data.getINCNumber)
 
         await checkCase(server, 'incQuery',incTestCaseNumber, 'state', INCState.NEW)
 
@@ -182,7 +174,7 @@ describe('incident - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { incQuery: [{ number: string}] }}>().data.incQuery[0].number).toBe("INC0000001")
+      expect(result.json<{ data: { incQuery: [{ number: string}] }}>().data.incQuery[0].number).toBe(incTestCaseNumber)
       expect(result.json<{ data: { incQuery: [{ number: string}] }}>().data.incQuery.length).toBe(1)
 
     })

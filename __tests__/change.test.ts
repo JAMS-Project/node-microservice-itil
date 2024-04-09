@@ -54,20 +54,16 @@ describe('change - basic tests', () => {
 
     test('create', async() => {
 
-      // total length of numbers
-      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberChgLen' })
-      // get number
-      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberChg' })
-      // increase count by one
-      currentNumber++
-      // update the database
-      await server.mongo.db.collection('misc').updateOne({ name: 'numberChg' }, { $set: { value: currentNumber } })
-      // cs number
-      const chgNUmber = zeroPad(currentNumber, valueLen)
+      const gqlGetChgNUmber = graphqlQuery('getCHGNumber')
+      const resultChgNUmber = await server.inject({
+        method: "POST",
+        body: gqlGetChgNUmber,
+        path: "/graphql"
+      })
 
       const gql = graphqlMutation('chgCreate',  ['number', 'result'],{
         'required': { value: {
-            number: `CHG${chgNUmber}`,
+            number: resultChgNUmber.json<{ data: { getCHGNumber: string }}>().data.getCHGNumber,
             user: '0000001',
             requester: '0000001',
             category: 'Hardware',
@@ -89,7 +85,7 @@ describe('change - basic tests', () => {
         path: "/graphql"
       })
       expect(result.json<{ data: { chgCreate: { result: boolean } }}>().data.chgCreate.result).toBe(true)
-      expect(result.json<{ data: { chgCreate: { number: string } }}>().data.chgCreate.number).toBe('CHG0000001')
+      expect(result.json<{ data: { chgCreate: { number: string } }}>().data.chgCreate.number).toBe(resultChgNUmber.json<{ data: { getCHGNumber: string }}>().data.getCHGNumber)
 
       chgTestCaseNumber = result.json<{ data: { chgCreate: { number: string } }}>().data.chgCreate.number
 

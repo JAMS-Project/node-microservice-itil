@@ -60,20 +60,16 @@ describe('problem - basic tests', () => {
 
     test('create', async() => {
 
-      // total length of numbers
-      const {value: valueLen } = await server.mongo.db.collection('misc').findOne({ name: 'numberPrbLen' })
-      // get number
-      let {value: currentNumber} = await server.mongo.db.collection('misc').findOne({ name: 'numberPrb' })
-      // increase count by one
-      currentNumber++
-      // update the database
-      await server.mongo.db.collection('misc').updateOne({ name: 'numberPrb' }, { $set: { value: currentNumber } })
-      // cs number
-      const prbNUmber = zeroPad(currentNumber, valueLen)
+      const gqlGetPrbNUmber = graphqlQuery('getPRBNumber')
+      const resultPrbNUmber = await server.inject({
+        method: "POST",
+        body: gqlGetPrbNUmber,
+        path: "/graphql"
+      })
 
       const gql = graphqlMutation('prbCreate',  ['number', 'result'],{
         'required': { value: {
-            number: `PRB${prbNUmber}`,
+            number: resultPrbNUmber.json<{ data: { getPRBNumber: string }}>().data.getPRBNumber,
             user: '0000001',
             category: 'Hardware',
             channel: 'MANUAL',
@@ -94,7 +90,7 @@ describe('problem - basic tests', () => {
         path: "/graphql"
       })
       expect(result.json<{ data: { prbCreate: { result: boolean } }}>().data.prbCreate.result).toBe(true)
-      expect(result.json<{ data: { prbCreate: { number: string } }}>().data.prbCreate.number).toBe('PRB0000001')
+      expect(result.json<{ data: { prbCreate: { number: string } }}>().data.prbCreate.number).toBe(resultPrbNUmber.json<{ data: { getPRBNumber: string }}>().data.getPRBNumber)
 
       prbTestCaseNumber = result.json<{ data: { prbCreate: { number: string } }}>().data.prbCreate.number
 
@@ -112,7 +108,7 @@ describe('problem - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { prbQuery: [{ number: string}] }}>().data.prbQuery[0].number).toBe("PRB0000001")
+      expect(result.json<{ data: { prbQuery: [{ number: string}] }}>().data.prbQuery[0].number).toBe(prbTestCaseNumber)
 
     })
 
@@ -128,7 +124,7 @@ describe('problem - basic tests', () => {
         body: gql,
         path: "/graphql"
       })
-      expect(result.json<{ data: { prbQuery: [{ number: string}] }}>().data.prbQuery[0].number).toBe("PRB0000001")
+      expect(result.json<{ data: { prbQuery: [{ number: string}] }}>().data.prbQuery[0].number).toBe(prbTestCaseNumber)
       expect(result.json<{ data: { prbQuery: [{ number: string}] }}>().data.prbQuery.length).toBe(1)
 
     })
