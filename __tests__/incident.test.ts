@@ -68,15 +68,17 @@ describe('incident - basic tests', () => {
       })
 
       const gql = graphqlMutation('incCreate',  ['number', 'result'],{
-        'required': { value: {
-          number: resultIncNUmber.json<{ data: { getINCNumber: string }}>().data.getINCNumber,
-            channel: 'SELF_SERVE',
-            category: 'Hardware',
-            user: '0000001',
-            impact: 'LOW',
-            urgency: 'LOW',
-            shortDescription: 'Hello, World!',
-            description: 'Foo Bar'},
+        'required': {
+          value: {
+            number: resultIncNUmber.json<{ data: { getINCNumber: string }}>().data.getINCNumber,
+              channel: 'SELF_SERVE',
+              category: 'Hardware',
+              user: '0000001',
+              impact: 'LOW',
+              urgency: 'LOW',
+              shortDescription: 'Hello, World!',
+              description: 'Foo Bar'
+            },
           type: 'INCRequiredFields',
           required: true
         }
